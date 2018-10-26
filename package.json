@@ -1,0 +1,26 @@
+{
+  "name": "se2_project",
+  "version": "1.0.0",
+  "description": "Files for se2 project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dave997/se2_project.git"
+  },
+  "keywords": [
+    "se2"
+  ],
+  "author": "Nathaniellee group",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dave997/se2_project/issues"
+  },
+  "homepage": "https://github.com/Dave997/se2_project#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
