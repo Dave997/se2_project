@@ -5,6 +5,7 @@ Didactical project for software engineering 2 unitn
 * Davide Ambrosi
 * Matteo Ponza
 * Riccardo Micheletto
+* Matteo Strada
 
 #### Project Related Links
 * https://se2-project-nathaniellee.herokuapp.com/
