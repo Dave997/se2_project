@@ -6,6 +6,7 @@ Didactical project for software engineering 2 unitn
 * Matteo Ponza
 * Riccardo Micheletto
 * Matteo Strada
+* Matteo Golinelli
 
 #### Project Related Links
 * https://se2-project-nathaniellee.herokuapp.com/
