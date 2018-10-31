@@ -1,12 +1,21 @@
-# se2_project
+# Software Engineering 2 project 
+
 Didactical project for software engineering 2 unitn
 
-#### Members of the group
-* Davide Ambrosi
-* Matteo Ponza
-* Riccardo Micheletto
-* Matteo Strada
-* Matteo Golinelli
+>**Team Members:**
+>
+>Davide Ambrosi,
+>Matteo Golinelli,
+>Matteo Strada,
+>Riccardo Micheletto,
+>Matteo Ponza
 
-#### Project Related Links
-* https://se2-project-nathaniellee.herokuapp.com/
+-------------
+### References: 
+* [GitHub repo](https://github.com/Dave997/se2_project/)
+* [API description document](https://se2projectnathaniellee.docs.apiary.io/#)
+* [Heroku app](https://se2-project-nathaniellee.herokuapp.com/)
+
+-------------
+## Description
+Project description
