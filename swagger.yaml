@@ -1,120 +1,72 @@
 swagger: '2.0'
+
 info:
   version: '1.0'
   title: "se2_project_nathaniellee"
-  description: Polls is a simple API allowing consumers to view polls and vote in them.
+  description: Didactical project for software engineering 2 unitn
   license:
     name: MIT
     url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
-host: polls.apiblueprint.org
+
+host: se2-project-nathaniellee.herokuapp.com
+
 basePath: /
 schemes:
-- http
+- https
+
 consumes:
 - application/json
 produces:
 - application/json
+
 paths:
-  /questions:
-    x-summary: Questions Collection
+  /students:
     get:
-      summary: List All Questions
+      summary: Returns the list of all students
+      # description: Description
+      produces:
+        - application/json
       responses:
         200:
-          description: Successful Response
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Question'
-          examples:
-            application/json:
-              - question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 2048
-                  - choice: Python
-                    votes: 1024
-                  - choice: Objective-C
-                    votes: 512
-                  - choice: Ruby
-                    votes: 256
-    post:
-      description: >-
-        You may create your own question using this action. It takes a JSON
-        object containing a question and a collection of answers in the
-        form of choices.
-      summary: Create a New Question
+          description: OK
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+  /students/{studentId}:
+    get:
+      summary: Returns the student with the specified id
       parameters:
-        - name: body
-          in: body
+        - in: path
+          name: studentId
           required: true
-          schema:
-            $ref: '#/definitions/QuestionRequest'
+          type: integer
+          minimum: 1
+          description: The id of the student
       responses:
-        201:
-          description: ''
+        200:
+          description: A Student object.
           schema:
-            $ref: '#/definitions/Question'
-          examples:
-            application/json:
-                question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 0
-                  - choice: Python
-                    votes: 0
-                  - choice: Objective-C
-                    votes: 0
-                  - choice: Ruby
-                    votes: 0
+            $ref: '#/definitions/Student'
+        400:
+          description: The specified user ID is invalid.
+        404:
+          description: A user with the specified ID was not found.
+        500:
+          description: Internal server error
+        default:
+          description: Unexpected error
+
 definitions:
-  Question:
-    title: Question
-    type: object
+  Student:
     properties:
-      question:
-        type: string
-      published_at:
-        type: string
-      choices:
-        type: array
-        items:
-          $ref: '#/definitions/Choice'
-    required:
-      - question
-      - published_at
-      - choices
-  Choice:
-    title: Choice
-    type: object
-    properties:
-      votes:
+      id:
         type: integer
-        format: int32
-      choice:
+        example: 123456
+      name:
         type: string
+        example: Polpetta
     required:
-      - votes
-      - choice
-  QuestionRequest:
-    title: Question Request
-    type: object
-    properties:
-      question:
-        type: string
-      choices:
-        type: array
-        items:
-          type: string
-    required:
-      - question
-      - choices
-    example:
-      question: Favourite programming language?
-      choices:
-        - Swift
-        - Python
-        - Objective-C
-        - Ruby
+      - id
