@@ -4,13 +4,10 @@ info:
   version: '1.0'
   title: "se2_project_nathaniellee"
   description: Didactical project for software engineering 2 unitn
-  license:
-    name: MIT
-    url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
 
 host: se2-project-nathaniellee.herokuapp.com
 
-basePath: /
+basePath: /api/v0.1
 schemes:
 - https
 
@@ -29,14 +26,20 @@ paths:
       responses:
         200:
           description: OK
+          examples:
+            'application/json':
+                students: [180, 164, 245, 354]
         400:
           description: Bad request
         404:
           description: Not found
         500:
           description: Internal server error
+
     post:
-      summary: "Add a new pet to the store"
+      tags:
+      - Students
+      summary: "Add a new student to the store"
       operationId: "addStudent"
       consumes:
       - "application/json"
@@ -46,27 +49,17 @@ paths:
       - in: "body"
         name: "Student"
         description: "The student to create"
-        required:
-        - stdentName:
-            properties:
-              stdentName:
-                type: string
-        - stdentEmail:
-            properties:
-              stdentName:
-                type: string
+        required: true
         schema:
           $ref: "#/definitions/Student"
       responses:
-        200:
-          description: "OK"
         201:
           description: Created
         405:
           description: "Invalid input"
+
     put:
       summary: "Update an existing student"
-      description: ""
       operationId: "updateStudent"
       consumes:
       - "application/json"
@@ -74,8 +67,8 @@ paths:
       - "application/json"
       parameters:
       - in: "body"
-        name: "body"
-        description: "Student object that needs to be added to the store"
+        name: "Student"
+        description: "The student to update"
         required: true
         schema:
           $ref: "#/definitions/Student"
@@ -103,7 +96,6 @@ paths:
           name: studentId
           required: true
           type: integer
-          minimum: 1
           description: The id of the student
       responses:
         200:
@@ -116,8 +108,7 @@ paths:
           description: A user with the specified ID was not found.
         500:
           description: Internal server error
-        default:
-          description: Unexpected error
+
     delete:
       summary: "Deletes a Student"
       description: ""
@@ -162,15 +153,15 @@ paths:
           description: Not found
         500:
           description: Internal server error
+
   /professor/{profId}:
     get:
-      summary: Returns the student with the specified id
+      summary: Returns the professor with the specified id
       parameters:
         - in: path
           name: profId
           required: true
           type: integer
-          minimum: 1
           description: The id of the professor
       responses:
         200:
@@ -183,13 +174,10 @@ paths:
           description: A user with the specified ID was not found.
         500:
           description: Internal server error
-        default:
-          description: Unexpected error
 
-  /courses:
+  /exercises:
     get:
-      summary: Returns the list of all courses
-      # description: Description
+      summary: Returns the list of all exercises
       produces:
         - application/json
       responses:
@@ -201,67 +189,231 @@ paths:
           description: Not found
         500:
           description: Internal server error
-  /courses/{courseId}:
+
+  /exercises/{exerciseId}:
     get:
-      summary: Returns the course with the specified id
+      summary: Returns the exercise with the specified id
       parameters:
         - in: path
-          name: courseId
+          name: exerciseId
           required: true
           type: integer
-          minimum: 1
-          description: The id of the course
+          description: The id of the exercise
       responses:
         200:
-          description: A Student object.
+          description: A Exercise object.
           schema:
-            $ref: '#/definitions/Course'
+            $ref: '#/definitions/Exercise'
         400:
-          description: The specified course ID is invalid.
+          description: The specified exercise ID is invalid.
         404:
-          description: A course with the specified ID was not found.
+          description: A exercise with the specified ID was not found.
         500:
           description: Internal server error
-        default:
-          description: Unexpected error
 
+  /task/{taskId}:
+    get:
+      summary: Returns the task with the specified id
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          type: integer
+          description: The id of the task
+      responses:
+        200:
+          description: A Task object.
+          schema:
+            $ref: '#/definitions/Task'
+        400:
+          description: The specified task ID is invalid.
+        404:
+          description: A task with the specified ID was not found.
+        500:
+          description: Internal server error
+
+  /group/{groupId}:
+    get:
+      summary: Returns the group with the specified id
+      parameters:
+        - in: path
+          name: groupId
+          required: true
+          type: integer
+          description: The id of the group
+      responses:
+        200:
+          description: A Group object.
+          schema:
+            $ref: '#/definitions/Group'
+        400:
+          description: The specified group ID is invalid.
+        404:
+          description: A group with the specified ID was not found.
+        500:
+          description: Internal server error
+
+  /assignment/{assignmentId}:
+    get:
+      summary: Returns the assignment with the specified id
+      parameters:
+        - in: path
+          name: assignmentId
+          required: true
+          type: integer
+          description: The id of the assignment
+      responses:
+        200:
+          description: An Assignment object.
+          schema:
+            $ref: '#/definitions/Assignment'
+        400:
+          description: The specified assignment ID is invalid.
+        404:
+          description: An assignment with the specified ID was not found.
+        500:
+          description: Internal server error
 
 definitions:
   Student:
+    type: object
     properties:
       id:
         type: integer
-        example: 123456
+        example: 123
+        format: int64
       name:
         type: string
         example: Polpetta
+      email:
+        type: string
+        example: polpetta@mail.it
     required:
       - id
+      - name
+      - email
 
   Professor:
+    type: object
     properties:
       id:
         type: integer
-        example: 123456
+        example: 123
+        format: int64
       name:
         type: string
         example: Polpetta
+      email:
+        type: string
+        example: polpetta@mail.it
     required:
       - id
+      - name
 
-  Course:
+  Exercise:
+    type: object
     properties:
       id:
         type: integer
-        example: 123456
+        example: 123
+        format: int64
       name:
         type: string
         example: Polpetta
+      type:
+        type: string
+        example: Text box
+        enum: [Text box, Radio button, Check box, True or False]
     required:
       - id
+      - name
+      - type
+
+  Submission:
+    type: object
+    properties:
+      taskId:
+        type: integer
+        example: 123
+        format: int64
+      studentId:
+        type: integer
+        example: 456
+        format: int64
+      answers:
+        type: array
+        items:
+          type: object
+          properties:
+            exerciseId:
+              type: integer
+              example: 789
+            value:
+              type: string
+              example: Polpetta
+    required:
+      - taskId
+      - studentId
+      - answers
+
+  Task:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 123
+      name:
+        type: string
+        example: Polpetta
+      exercises:
+        type: array
+        items:
+          type: integer
+          example: 456
+    required:
+      - id
+      - exercises
   
-# Da aggiungere:
-# - task
-# - exercise
-# - contributors
-# - group
+  Group:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 123
+      name:
+        type: string
+        example: Polpetta
+      students:
+        type: array
+        items:
+          type: integer
+          example: 456
+    required:
+      - id
+      - name
+      - students
+  
+  Assignment:
+    type: object
+    properties:
+      taskId:
+        type: integer
+        example: 123
+      groupId:
+        type: integer
+        example: 123
+      name:
+        type: string
+        example: Polpetta
+      deadline:
+        type: string
+        format: date-time
+        example: 13/11/2018-10:40
+    required:
+      - taskId
+      - groupId
+      - deadline
+
+
+# TODO
+# - togliere le s tipo da returns
