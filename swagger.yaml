@@ -2,8 +2,8 @@ swagger: '2.0'
 
 info:
   version: '1.0'
-  title: "se2_project_nathaniellee"
-  description: Didactical project for software engineering 2 unitn
+  title: 'DEEO: Dynamic Exam Evaluation Online'
+  description: Didactical project for Software Engineering 2 UniTN - Nathaniellee group
 
 host: se2-project-nathaniellee.herokuapp.com
 
@@ -17,9 +17,9 @@ produces:
 - application/json
 
 paths:
-  /students:
+  /users:
     get:
-      summary: Returns the list of all students
+      summary: Return the list of all users
       # description: Description
       produces:
         - application/json
@@ -28,7 +28,7 @@ paths:
           description: OK
           examples:
             'application/json':
-                students: [180, 164, 245, 354]
+                users: [180, 164, 245, 354]
         400:
           description: Bad request
         404:
@@ -38,151 +38,123 @@ paths:
 
     post:
       tags:
-      - Students
-      summary: "Add a new student to the store"
-      operationId: "addStudent"
+      - Users
+      summary: Add a new User to the store
+      operationId: addUser
       consumes:
-      - "application/json"
+      - application/json
       produces:
-      - "application/json"
+      - application/json
       parameters:
-      - in: "body"
-        name: "Student"
-        description: "The student to create"
+      - in: body
+        name: User
+        description: The User to create
         required: true
         schema:
-          $ref: "#/definitions/Student"
+          $ref: '#/definitions/User'
       responses:
         201:
           description: Created
-        405:
-          description: "Invalid input"
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /users/{userId}:
+    get:
+      summary: Return the User with the specified ID
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+          description: The ID of the User
+      responses:
+        200:
+          description: A User object
+          schema:
+            $ref: '#/definitions/User'
+        400:
+          description: The specified User ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A User with the specified ID was not found
+        500:
+          description: Internal server error
 
     put:
-      summary: "Update an existing student"
-      operationId: "updateStudent"
+      summary: Update an existing User
+      operationId: updateUser
       consumes:
-      - "application/json"
+      - application/json
       produces:
-      - "application/json"
+      - application/json
       parameters:
-      - in: "body"
-        name: "Student"
-        description: "The student to update"
-        required: true
-        schema:
-          $ref: "#/definitions/Student"
+      - in: path
+          name: userId
+          required: true
+          type: integer
+          description: The ID of the User
+        - in: body
+          name: User
+          description: The User to update
+          required: true
+          schema:
+            $ref: '#/definitions/User'
       responses:
         200:
           description: OK
-        201:
-          description: Created
         400:
           description: Invalid ID supplied
         401:
           description: Unauthorized
         404:
-          description: Pet not found
-        405:
-          description: Validation exception
-        409:
-          description: Conflict
-
-  /students/{studentId}:
-    get:
-      summary: Returns the student with the specified id
-      parameters:
-        - in: path
-          name: studentId
-          required: true
-          type: integer
-          description: The id of the student
-      responses:
-        200:
-          description: A Student object.
-          schema:
-            $ref: '#/definitions/Student'
-        400:
-          description: The specified user ID is invalid.
-        404:
-          description: A user with the specified ID was not found.
+          description: A User with the specified ID was not found
         500:
           description: Internal server error
 
     delete:
-      summary: "Deletes a Student"
-      description: ""
-      operationId: "deleteStudent"
+      summary: Delete a User
+      operationId: deleteUser
       produces:
-      - "application/json"
+      - application/json
       parameters:
-      - name: "api_key"
-        in: "header"
+      - name: api_key
+        in: header
         required: false
-        type: "string"
-      - name: "studentId"
-        in: "path"
-        description: "Student id to delete"
+        type: string
+      - name: userId
+        in: path
+        description: User ID to delete
         required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "OK"
-        400:
-          description: "Invalid ID supplied"
-        401:
-          description: Unauthorized
-        404:
-          description: "Student not found"
-        406:
-          description: Not Acceptable #Da valutare in caso si passi l'id
-
-  /professor:
-    get:
-      summary: Returns the list of all professors
-      # description: Description
-      produces:
-        - application/json
+        type: integer
+        format: int64
       responses:
         200:
           description: OK
         400:
-          description: Bad request
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
         404:
-          description: Not found
-        500:
-          description: Internal server error
-
-  /professor/{profId}:
-    get:
-      summary: Returns the professor with the specified id
-      parameters:
-        - in: path
-          name: profId
-          required: true
-          type: integer
-          description: The id of the professor
-      responses:
-        200:
-          description: A Professor object.
-          schema:
-            $ref: '#/definitions/Professor'
-        400:
-          description: The specified user ID is invalid.
-        404:
-          description: A user with the specified ID was not found.
+          description: A User with the specified ID was not found
         500:
           description: Internal server error
 
   /exercises:
     get:
-      summary: Returns the list of all exercises
+      summary: Return the list of all exercises
       produces:
         - application/json
       responses:
         200:
           description: OK
+          examples:
+            'application/json':
+                exercises: [180, 164, 245, 354]
         400:
           description: Bad request
         404:
@@ -190,30 +162,112 @@ paths:
         500:
           description: Internal server error
 
+    post:
+      tags:
+      - Exercises
+      summary: Add a new exercise to the store
+      operationId: addExercise
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Exercise
+        description: The exercise to create
+        required: true
+        schema:
+          $ref: '#/definitions/Exercise'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
   /exercises/{exerciseId}:
     get:
-      summary: Returns the exercise with the specified id
+      summary: Return the exercise with the specified ID
       parameters:
         - in: path
           name: exerciseId
           required: true
           type: integer
-          description: The id of the exercise
+          description: The ID of the exercise
       responses:
         200:
-          description: A Exercise object.
+          description: A Exercise object
           schema:
             $ref: '#/definitions/Exercise'
         400:
-          description: The specified exercise ID is invalid.
+          description: The specified exercise ID is invalid
+        401:
+          description: Unauthorized
         404:
-          description: A exercise with the specified ID was not found.
+          description: A Exercise with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Exercise
+      operationId: updateExercise
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Exercise
+        description: The Exercise to update
+        required: true
+        schema:
+          $ref: '#/definitions/Exercise'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Exercise with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a Exercise
+      operationId: deleteExercise
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: exerciseId
+        in: path
+        description: Exercise ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Exercise with the specified ID was not found
         500:
           description: Internal server error
 
   /task/{taskId}:
     get:
-      summary: Returns the task with the specified id
+      summary: Return the task with the specified id
       parameters:
         - in: path
           name: taskId
@@ -222,40 +276,40 @@ paths:
           description: The id of the task
       responses:
         200:
-          description: A Task object.
+          description: A Task object
           schema:
             $ref: '#/definitions/Task'
         400:
-          description: The specified task ID is invalid.
+          description: The specified task ID is invalid
         404:
-          description: A task with the specified ID was not found.
+          description: A task with the specified ID was not found
         500:
           description: Internal server error
 
-  /group/{groupId}:
+  /userGroup/{userGroupId}:
     get:
-      summary: Returns the group with the specified id
+      summary: Return the group of users with the specified id
       parameters:
         - in: path
-          name: groupId
+          name: userGroupId
           required: true
           type: integer
-          description: The id of the group
+          description: The id of the group of users
       responses:
         200:
-          description: A Group object.
+          description: A Group object
           schema:
-            $ref: '#/definitions/Group'
+            $ref: '#/definitions/UserGroup'
         400:
-          description: The specified group ID is invalid.
+          description: The specified userGroup ID is invalid
         404:
-          description: A group with the specified ID was not found.
+          description: A group of users with the specified ID was not found
         500:
           description: Internal server error
 
   /assignment/{assignmentId}:
     get:
-      summary: Returns the assignment with the specified id
+      summary: Return the assignment with the specified id
       parameters:
         - in: path
           name: assignmentId
@@ -264,18 +318,18 @@ paths:
           description: The id of the assignment
       responses:
         200:
-          description: An Assignment object.
+          description: An Assignment object
           schema:
             $ref: '#/definitions/Assignment'
         400:
-          description: The specified assignment ID is invalid.
+          description: The specified assignment ID is invalid
         404:
-          description: An assignment with the specified ID was not found.
+          description: An assignment with the specified ID was not found
         500:
           description: Internal server error
 
 definitions:
-  Student:
+  User:
     type: object
     properties:
       id:
@@ -292,23 +346,6 @@ definitions:
       - id
       - name
       - email
-
-  Professor:
-    type: object
-    properties:
-      id:
-        type: integer
-        example: 123
-        format: int64
-      name:
-        type: string
-        example: Polpetta
-      email:
-        type: string
-        example: polpetta@mail.it
-    required:
-      - id
-      - name
 
   Exercise:
     type: object
@@ -336,7 +373,7 @@ definitions:
         type: integer
         example: 123
         format: int64
-      studentId:
+      userId:
         type: integer
         example: 456
         format: int64
@@ -353,7 +390,34 @@ definitions:
               example: Polpetta
     required:
       - taskId
-      - studentId
+      - userId
+      - answers
+
+  PeerReview:
+    type: object
+    properties:
+      submissionId:
+        type: integer
+        example: 123
+        format: int64
+      userId:
+        type: integer
+        example: 456
+        format: int64
+      answers:
+        type: array
+        items:
+          type: object
+          properties:
+            exerciseId:
+              type: integer
+              example: 789
+            value:
+              type: string
+              example: Polpetta
+    required:
+      - taskId
+      - userId
       - answers
 
   Task:
@@ -374,7 +438,7 @@ definitions:
       - id
       - exercises
   
-  Group:
+  UserGroup:
     type: object
     properties:
       id:
@@ -383,7 +447,7 @@ definitions:
       name:
         type: string
         example: Polpetta
-      students:
+      users:
         type: array
         items:
           type: integer
@@ -391,7 +455,7 @@ definitions:
     required:
       - id
       - name
-      - students
+      - users
   
   Assignment:
     type: object
@@ -399,7 +463,7 @@ definitions:
       taskId:
         type: integer
         example: 123
-      groupId:
+      userGroupId:
         type: integer
         example: 123
       name:
@@ -411,9 +475,26 @@ definitions:
         example: 13/11/2018-10:40
     required:
       - taskId
-      - groupId
+      - userGroupId
       - deadline
 
-
-# TODO
-# - togliere le s tipo da returns
+  TaskEvaluation:
+    type: object
+    properties:
+      mark:
+        type: integer
+        example: 30
+      userId:
+        description: The user that evaluates the submission
+        type: integer
+        example: 123
+      submissionId:
+        type: integer
+        example: 456
+      review:
+        type: string
+        example: Good job Polpetta!
+    required:
+      - mark
+      - userId
+      - submissionId
