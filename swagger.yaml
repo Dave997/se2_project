@@ -20,12 +20,11 @@ paths:
   /users:
     get:
       summary: Return the list of all users
-      # description: Description
       produces:
         - application/json
       responses:
         200:
-          description: OK
+          description: An array of User IDs
           examples:
             'application/json':
                 users: [180, 164, 245, 354]
@@ -106,7 +105,7 @@ paths:
           $ref: '#/definitions/User'
       responses:
         200:
-          description: OK
+          description: Updated
         400:
           description: Invalid ID supplied
         401:
@@ -165,8 +164,8 @@ paths:
     post:
       tags:
       - Exercises
-      summary: Add a new exercise to the system
-      operationId: addExercise 
+      summary: Add a new Exercise to the system
+      operationId: addExercise
       consumes:
       - application/json
       produces:
@@ -174,7 +173,7 @@ paths:
       parameters:
       - in: body
         name: Exercise
-        description: The exercise to create
+        description: The Exercise to create
         required: true
         schema:
           $ref: '#/definitions/Exercise'
@@ -190,20 +189,20 @@ paths:
 
   /exercises/{exerciseId}:
     get:
-      summary: Return the exercise with the specified ID
+      summary: Return the Exercise with the specified ID
       parameters:
         - in: path
           name: exerciseId
           required: true
           type: integer
-          description: The ID of the exercise
+          description: The ID of the Exercise
       responses:
         200:
           description: A Exercise object
           schema:
             $ref: '#/definitions/Exercise'
         400:
-          description: The specified exercise ID is invalid
+          description: The specified Exercise ID is invalid
         401:
           description: Unauthorized
         404:
@@ -270,6 +269,8 @@ paths:
         500:
           description: Internal server error
 
+
+
   /task:
     get:
       summary: Return the list of all tasks
@@ -291,7 +292,7 @@ paths:
     post:
       tags:
       - Exercises
-      summary: Add a new task to the pool of all tasks
+      summary: Add a new Task to the pool of all tasks
       operationId: addExercise
       consumes:
       - application/json
@@ -300,7 +301,7 @@ paths:
       parameters:
       - in: body
         name: Task
-        description: The task to create
+        description: The Task to create
         required: true
         schema:
           $ref: '#/definitions/Task'
@@ -316,22 +317,22 @@ paths:
 
   /task/{taskId}:
     get:
-      summary: Return the task with the specified id
+      summary: Return the Task with the specified ID
       parameters:
         - in: path
           name: taskId
           required: true
           type: integer
-          description: The id of the task
+          description: The ID of the Task
       responses:
         200:
           description: A Task object
           schema:
             $ref: '#/definitions/Task'
         400:
-          description: The specified task ID is invalid
+          description: The specified Task ID is invalid
         404:
-          description: A task with the specified ID was not found
+          description: A Task with the specified ID was not found
         500:
           description: Internal server error
 
@@ -396,7 +397,7 @@ paths:
 
   /userGroup:
     get:
-      summary: Return the list of all User groups
+      summary: Return the list of all user groups
       produces:
         - application/json
       responses:
@@ -440,13 +441,13 @@ paths:
 
   /userGroup/{userGroupId}:
     get:
-      summary: Return the group of users with the specified id
+      summary: Return the Group of users with the specified ID
       parameters:
         - in: path
           name: userGroupId
           required: true
           type: integer
-          description: The id of the group of users
+          description: The ID of the Group of users
       responses:
         200:
           description: A Group object
@@ -492,7 +493,7 @@ paths:
 
     delete:
       summary: Delete an User Group
-      operationId: deleteUser Group
+      operationId: deleteUserGroup
       produces:
       - application/json
       parameters:
@@ -527,16 +528,16 @@ paths:
           schema:
             $ref: '#/definitions/Assignment'
         400:
-          description: The specified assignment ID is invalid
+          description: The specified Assignment ID is invalid
         404:
-          description: An assignment with the specified ID was not found
+          description: An Assignment with the specified ID was not found
         500:
           description: Internal server error
 
     post:
       tags:
       - Exercises
-      summary: Add a new assignment to the pool of all tasks
+      summary: Add a new Assignment to the pool of all tasks
       operationId: addAssignment
       consumes:
       - application/json
@@ -561,22 +562,22 @@ paths:
 
   /assignment/{assignmentId}:
     get:
-      summary: Return the assignment with the specified id
+      summary: Return the Assignment with the specified ID
       parameters:
         - in: path
           name: assignmentId
           required: true
           type: integer
-          description: The id of the assignment
+          description: The ID of the Assignment
       responses:
         200:
           description: An Assignment object
           schema:
             $ref: '#/definitions/Assignment'
         400:
-          description: The specified assignment ID is invalid
+          description: The specified Assignment ID is invalid
         404:
-          description: An assignment with the specified ID was not found
+          description: An Assignment with the specified ID was not found
         500:
           description: Internal server error
 
@@ -607,7 +608,7 @@ paths:
         401:
           description: Unauthorized
         404:
-          description: An assignment with the specified ID was not found
+          description: An Assignment with the specified ID was not found
         500:
           description: Internal server error
 
@@ -639,6 +640,257 @@ paths:
         500:
           description: Internal server error
 
+  /peerReviews:
+    get:
+      summary: Return the list of all peer reviews
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+                peerReviews: [180, 164, 245, 354]
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - PeerReviews
+      summary: Add a new Peer Review to the system
+      operationId: addPeerReview
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Peer Review
+        description: The Peer Review to create
+        required: true
+        schema:
+          $ref: '#/definitions/PeerReview'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /peerReviews/{peerReviewId}:
+    get:
+      summary: Return the Peer Review with the specified ID
+      parameters:
+        - in: path
+          name: peerReviewId
+          required: true
+          type: integer
+          description: The ID of the Peer Review
+      responses:
+        200:
+          description: A Peer Review object
+          schema:
+            $ref: '#/definitions/PeerReview'
+        400:
+          description: The specified Peer Review ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A Peer Review with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Peer Review
+      operationId: updatePeerReview
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: peerReviewId
+        required: true
+        type: integer
+        description: The ID of the Peer Review
+      - in: body
+        name: PeerReview
+        description: The Excercise to update
+        required: true
+        schema:
+          $ref: '#/definitions/PeerReview'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Peer Review with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a Peer Review
+      operationId: deletePeerReview
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: peerReviewId
+        in: path
+        description: Peer Review ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Peer Review with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /taskEvaluations:
+    get:
+      summary: Return the list of all task evaluations
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+                taskEvaluations: [180, 164, 245, 354]
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - TaskEvaluations
+      summary: Add a new Task Evaluation to the system
+      operationId: addTaskEvaluation
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Task Evaluation
+        description: The Task Evaluation to create
+        required: true
+        schema:
+          $ref: '#/definitions/TaskEvaluation'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /taskEvaluations/{taskEvaluationId}:
+    get:
+      summary: Return the Task Evaluation with the specified ID
+      parameters:
+        - in: path
+          name: taskEvaluationId
+          required: true
+          type: integer
+          description: The ID of the Task Evaluation
+      responses:
+        200:
+          description: A Task Evaluation object
+          schema:
+            $ref: '#/definitions/TaskEvaluation'
+        400:
+          description: The specified Task Evaluation ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A Task Evaluation with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Task Evaluation
+      operationId: updateTaskEvaluation
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: taskEvaluationId
+        required: true
+        type: integer
+        description: The ID of the Task Evaluation
+      - in: body
+        name: TaskEvaluation
+        description: The Excercise to update
+        required: true
+        schema:
+          $ref: '#/definitions/TaskEvaluation'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Task Evaluation with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a Task Evaluation
+      operationId: deleteTaskEvaluation
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: taskEvaluationId
+        in: path
+        description: Task Evaluation ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Task Evaluation with the specified ID was not found
+        500:
+          description: Internal server error
 
 definitions:
   User:
