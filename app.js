@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 
 // const exercises = require('./api/routes/exercises');
 // const users = require('./api/routes/users');
+const tasks = require('./api/routes/tasks');
 
 // DB connection
 // mongoose.connect('mongodb://nathaniellee:'
@@ -24,14 +25,14 @@ app.use(bodyParser.json()); // this will extract json data from requests
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header(
-        'Access-Control-Allow-Headers', 
+        'Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept, Authorization'
     );
 
     //sent by browser in post req, to check if it's possibile to perform it
     if(req.method === 'OPTIONS'){
         res.header('Acces-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-        
+
         return res.status(200).json({});
     }
 
@@ -41,6 +42,7 @@ app.use((req, res, next) => {
 // // Set routes which should handle requests, these method forwards directly to js file with corrispondent method
 // app.use("/exercises", exercises);
 // app.use('/users', users);
+app.use('/tasks', tasks);
 
 // if the server reach that line, none of the routes above was able to process the request, so i should send an error message
 app.use((req, res, next) => {
@@ -48,7 +50,7 @@ app.use((req, res, next) => {
     error.status = 404;
 
     //this will forward the error req insted of the original
-    next(error); 
+    next(error);
 })
 
 //* Error Handler
