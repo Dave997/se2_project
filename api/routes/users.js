@@ -6,22 +6,12 @@ const jwt = require('jsonwebtoken');
 
 const User = require("../models/user");
 const UserController = require("../controllers/users");
-/*
-router.get('/', (req, res, next) => {
-    User.find()
-        .exec()
-        .then(users => {
-          return res.status(200).json(users);
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(500).json({
-            error: err
-          });
-        });
-  });*/
 
-router.post('/signup', UserController.users_post_createUser);
+router.get('/', UserController.user_get_all);
+
+router.get('/:userId', UserController.users_get_userInfo);
+
+router.post('/', UserController.users_post_createUser);
 
 router.post('/login', UserController.user_post_login);
 

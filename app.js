@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 // const mongoose = require('mongoose');
 
 // const exercises = require('./api/routes/exercises');
-// const users = require('./api/routes/users');
+const users = require('./api/routes/users');
 
 // DB connection
 // mongoose.connect('mongodb://nathaniellee:'
@@ -38,9 +38,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// // Set routes which should handle requests, these method forwards directly to js file with corrispondent method
+// Set routes which should handle requests, these method forwards directly to js file with corrispondent method
 // app.use("/exercises", exercises);
-// app.use('/users', users);
+app.use('/users', users);
 
 // if the server reach that line, none of the routes above was able to process the request, so i should send an error message
 app.use((req, res, next) => {
