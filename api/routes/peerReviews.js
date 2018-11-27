@@ -1,0 +1,13 @@
+const express = require('express');
+
+const router = express.Router();
+
+const PeerReviewscontroller = require("../controllers/peerReviews");
+
+router.get("/", PeerReviewscontroller.peerReviews_get_all);
+
+router.post("/", PeerReviewscontroller.peerReviews_post_createPeerReviews);
+
+router.get("/:id", PeerReviewscontroller.peerReviews_get_singlePeerReview);
+
+module.exports = router;
