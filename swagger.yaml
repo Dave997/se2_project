@@ -978,7 +978,7 @@ definitions:
               type: string
               example: Polpetta
     required:
-      - taskId
+      - submissionId
       - userId
       - answers
 
