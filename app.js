@@ -1,31 +1,65 @@
-const express = require('express');
+const express = require('express'); // this will use express to handle request
 const app = express();
-const PORT = process.env.PORT || 3000;
+const morgan = require('morgan'); //middleware for authentication
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-app.get('/', function (req, res) {
-    var html= (`
-          <!doctype html>
-          <html>
-          <head>
-                <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-          </head>
-          <body>
-                <div class ="container">
-                      <div class="jumbotron">
-                            <h1 class="text-center">Hello World!</h1>
-                            <br>
-                            <h2>Develop</h2>
-                      </div>
-                </div>
-          </body>
-          </html>
-    `);
-    res.send(html);
+const exercises = require('./api/routes/exercises');
+const users = require('./api/routes/users');
+
+// DB connection
+mongoose.connect('mongodb://nathaniellee:'
+    + process.env.MONGO_ATLAS_PSW  +'@se2nathaniellee-shard-00-00-kcdnu.gcp.mongodb.net:27017,se2nathaniellee-shard-00-01-kcdnu.gcp.mongodb.net:27017,se2nathaniellee-shard-00-02-kcdnu.gcp.mongodb.net:27017/test?ssl=true&replicaSet=SE2Nathaniellee-shard-0&authSource=admin&retryWrites=true',
+    {
+        useMongoClient: true
+    });
+mongoose.Promise = global.Promise;
+
+app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({extended: false})); //this would parse urlencoded requets, without rich-extended options (false)
+app.use(bodyParser.json()); // this will extract json data from requests
+
+
+// headers to prevent CORS errors
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+        'Access-Control-Allow-Headers', 
+        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
+
+    //sent by browser in post req, to check if it's possibile to perform it
+    if(req.method === 'OPTIONS'){
+        res.header('Acces-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+        
+        return res.status(200).json({});
+    }
+
+    next();
 });
 
-// Running Server Details.
-var server = app.listen(PORT, function () {
-    var host = server.address().address;
-    var port = server.address().port;
-    console.log("App listening at %s:%s Port", host, port);
+// Set routes which should handle requests, these method forwards directly to js file with corrispondent method
+app.use("/exercises", exercises);
+app.use('/users', users);
+
+// if the server reach that line, none of the routes above was able to process the request, so i should send an error message
+app.use((req, res, next) => {
+    const error = new Error('Not found');
+    error.status = 404;
+
+    //this will forward the error req insted of the original
+    next(error); 
+})
+
+//* Error Handler
+// this method will be called from "next(error)"
+app.use((error, req, res, next) => {
+    res.status(error.status || 500);
+    res.json({
+        error: {
+            message: error.message
+        }
+    });
 });
+
+module.exports = app;
