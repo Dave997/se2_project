@@ -269,9 +269,7 @@ paths:
         500:
           description: Internal server error
 
-
-
-  /task:
+  /tasks:
     get:
       summary: Return the list of all tasks
       produces:
@@ -291,7 +289,7 @@ paths:
 
     post:
       tags:
-      - Exercises
+      - Tasks
       summary: Add a new Task to the pool of all tasks
       operationId: addExercise
       consumes:
@@ -315,7 +313,7 @@ paths:
         500:
           description: Internal server error
 
-  /task/{taskId}:
+  /tasks/{taskId}:
     get:
       summary: Return the Task with the specified ID
       parameters:
@@ -395,7 +393,7 @@ paths:
         500:
           description: Internal server error
 
-  /userGroup:
+  /userGroups:
     get:
       summary: Return the list of all user groups
       produces:
@@ -439,7 +437,7 @@ paths:
         500:
           description: Internal server error
 
-  /userGroup/{userGroupId}:
+  /userGroups/{userGroupId}:
     get:
       summary: Return the Group of users with the specified ID
       parameters:
@@ -519,7 +517,7 @@ paths:
         500:
           description: Internal server error
 
-  /assignment:
+  /assignments:
     get:
       summary: Return the list of all assignments
       responses:
@@ -536,7 +534,7 @@ paths:
 
     post:
       tags:
-      - Exercises
+      - Assignments
       summary: Add a new Assignment to the pool of all tasks
       operationId: addAssignment
       consumes:
@@ -560,7 +558,7 @@ paths:
         500:
           description: Internal server error
 
-  /assignment/{assignmentId}:
+  /assignments/{assignmentId}:
     get:
       summary: Return the Assignment with the specified ID
       parameters:
@@ -980,7 +978,7 @@ definitions:
               type: string
               example: Polpetta
     required:
-      - taskId
+      - submissionId
       - userId
       - answers
 
