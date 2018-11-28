@@ -8,11 +8,25 @@ const bcrypt = require('bcrypt');
 
 exports.user_get_all = (req, res, next) => {
 
-	User.find()
-		.select({deleted:0})
+	User.find({deleted:0})
 		.exec()
 		.then(users => {
-			return res.status(200).json(users);
+
+			var response = [];
+
+			users.forEach(user => {
+				response.push({
+					id:user._id,
+					email:user.email,
+					password:user.password,
+					name:user.name
+				});				
+			});
+
+			return res.status(200).json({
+				count: response.length,
+				users: response
+			});
 		})
 		.catch(err => {
 			console.log(err);
@@ -29,10 +43,9 @@ exports.users_get_userInfo = (req, res, next) => {
 	User.find({
 			_id: req.params.userId
 		})
-		.select({deleted:0})
 		.exec()
 		.then(user => {
-			if (user.length < 1) {
+			if (user.length < 1 || user[0].deleted == 1) {
 				return res.status(401).json({
 					message: "User not found!"
 				});
@@ -46,9 +59,8 @@ exports.users_get_userInfo = (req, res, next) => {
 			});
 		})
 		.catch(err => {
-			console.log(err);
-			res.status(500).json({
-				error: err
+			return res.status(401).json({
+				message: "User not found!"
 			});
 		});
 
@@ -111,9 +123,7 @@ exports.users_post_createUser = (req, res, next) => {
 		});
 	*/
 
-	User.find({
-			email: req.body.email
-		})
+	User.find({ email: req.body.email })
 		.exec()
 		.then(user => {
 			if (user.length >= 1) {
@@ -207,14 +217,17 @@ exports.user_delete_deleteUser = (req, res, next) => {
 	const id = req.params.userId;
 
 	// check if user exists
-	User.find({
-			_id: id
-		})
+	User.find({	_id: id})
 		.exec()
 		.then(user => {
 			if (user.length < 1) {
 				return res.status(401).json({
 					message: "User not found!"
+				});
+			}
+			if(user[0].deleted == 1){
+				return res.status(401).json({
+					message: "User alredy deleted!"
 				});
 			}
 		})
@@ -229,7 +242,7 @@ exports.user_delete_deleteUser = (req, res, next) => {
 	User.update({
 			_id: id
 		}, {
-			delete: 1
+			deleted: 1
 		})
 		.exec()
 		.then(result => {

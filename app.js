@@ -17,6 +17,7 @@ const users = require('./api/routes/users');
 //     });
 // mongoose.Promise = global.Promise;
 
+// N.B. remember to make the db run! $> sudo service mongod start
 mongoose.connect('mongodb://127.0.0.1:27017');
 
 app.use(morgan('dev'));
