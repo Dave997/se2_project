@@ -764,6 +764,131 @@ paths:
         500:
           description: Internal server error
 
+  /submissions:
+    get:
+      summary: Return the list of all submissions
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+              submissions: [180, 164, 245, 354]
+        400:  
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Submissions
+      summary: Add a new submission
+      operationId: addSubmission
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Submission
+        description: The Peer Review to create
+        required: true
+        schema:
+          $ref: '#/definitions/Submission'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /submissions/{submissionId}:
+    get:
+      summary: Return the Submission with the specified ID
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        type: integer
+        description: The ID of the Submission
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A Submission object
+          schema:
+            $ref: '#/definitions/Submission'
+        400:
+          description: The specified Submission ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A Submission ID was not found in the system
+        500:
+          description: Internal server error
+    put:
+      summary: Update an existing Submission
+      operationId: updateSubmission
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        type: integer
+        description: The ID of Submission
+      - in: body
+        name: Submission
+        description: The Submission to update
+        required: true
+        schema:
+          $ref: '#/definitions/Submission'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Submission with the specified ID was not found
+        500:
+          description: Internal server error
+    delete:
+      summary: Delete a Submission
+      operationId: deleteSubmission
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: submissionId
+        in: path
+        description: Submission ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Submission with the specified ID was not found
+        500:
+          description: Internal server error
+
   /taskEvaluations:
     get:
       summary: Return the list of all task evaluations
@@ -922,15 +1047,28 @@ definitions:
       type:
         type: string
         example: Text box
-        enum: [Text box, Radio button, Check box, True or False]
+        enum: [Radio button, Text box, Check box, True or False]
+      question:
+        type: string
+        example: "Which is your favourite ... ?"
+      options:
+        type: array
+        items:
+          type: string
+        example: [red, green, blue]
     required:
       - id
       - name
       - type
+      - question
 
   Submission:
     type: object
     properties:
+      submissionId:
+        type: integer
+        example: 123
+        format: int64
       taskId:
         type: integer
         example: 123
@@ -958,6 +1096,10 @@ definitions:
   PeerReview:
     type: object
     properties:
+      peerReviewId:
+        type: integer
+        example: 1234
+        format: int64  
       submissionId:
         type: integer
         example: 123
@@ -1022,6 +1164,10 @@ definitions:
   Assignment:
     type: object
     properties:
+      assignmentId:
+        type: integer
+        example: 123
+        format: int64
       taskId:
         type: integer
         example: 123
