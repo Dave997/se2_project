@@ -8,9 +8,8 @@ const bcrypt = require('bcrypt');
 
 exports.user_get_all = (req, res, next) => {
 
-	User.find({
-			//deleted: 0
-		})
+	User.find()
+		.select({deleted:0})
 		.exec()
 		.then(users => {
 			return res.status(200).json(users);
@@ -28,9 +27,9 @@ exports.user_get_all = (req, res, next) => {
 exports.users_get_userInfo = (req, res, next) => {
 
 	User.find({
-			_id: req.params.userId,
-			deleted: 0
+			_id: req.params.userId
 		})
+		.select({deleted:0})
 		.exec()
 		.then(user => {
 			if (user.length < 1) {
@@ -158,9 +157,9 @@ exports.users_post_createUser = (req, res, next) => {
 exports.user_post_login = (req, res, next) => {
 
 	User.find({
-			email: req.body.email,
-			deleted : 0
+			email: req.body.email
 		})
+		.select({deleted:0})
 		.exec()
 		.then(user => {
 			if (user.length < 1) {
