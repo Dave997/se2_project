@@ -148,7 +148,8 @@ exports.users_post_createUser = (req, res, next) => {
 							.then(result => {
 								console.log(result);
 								res.status(201).json({
-									message: "User created"
+									message: "User created",
+									user: user
 								});
 							})
 							.catch(err => {
@@ -232,9 +233,8 @@ exports.user_delete_deleteUser = (req, res, next) => {
 			}
 		})
 		.catch(err => {
-			console.log(err);
-			res.status(500).json({
-				error: err
+			return res.status(401).json({
+				message: "User not found!"
 			});
 		});
 
@@ -251,7 +251,6 @@ exports.user_delete_deleteUser = (req, res, next) => {
 			});
 		})
 		.catch(err => {
-			console.log(err);
 			res.status(500).json({
 				error: err
 			});
@@ -326,8 +325,14 @@ exports.user_put_modify = (req, res, next) => {
 	var new_user = {};
 	if(req.body.email)
 		new_user.email = req.body.email;
-	if(req.body.name)
+	else if(req.body.name)
 		new_user.name = req.body.name;
+	else
+		return res.status(401).json({
+			message: "Bad parameters"
+		});		
+
+	console.log(new_user);
 
 	User.update({_id:id},{$set:new_user})
 		.exec()
