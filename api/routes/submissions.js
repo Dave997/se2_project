@@ -4,12 +4,14 @@ const router = express.Router();
 const Submission = require("../models/submission");
 const SubmissionController = require("../controllers/submissions");
 
-router.get('/', SubmissionController.submission_get_all);
+router.get('/', SubmissionController.submissions_get_all);
 
 router.get('/:submissionId', SubmissionController.submissions_get_submissionInfo);
 
-router.post('/', SubmissionController.submission_post_createSubmission);
+router.post('/', SubmissionController.submissions_post_createSubmission);
 
-router.delete('/:submissionId', SubmissionController.submission_post_deleteSubmission);
+router.put('/:submissionId', SubmissionController.submissions_put_updateSubmission);
+
+router.delete('/:submissionId', SubmissionController.submissions_post_deleteSubmission);
 
 module.exports = router;
