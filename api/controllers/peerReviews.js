@@ -1,6 +1,7 @@
 const express = require('express');
-let peerReviews = [{id:1, submissionId:1, userId:1, answers:[{exerciseId:1, value:"polpetta"}]},
-                {id:2, submissionId:2, userId:2, answers:[{exerciseId:2, value:"aronne"}]}];
+let peerReviews = [{"id":1, "submissionId":1, "userId":1, "answers":[{"exerciseId":1, "value":"polpetta"}]},
+                {"id":2, "submissionId":2, "userId":2, "answers":[{"exerciseId":2, "value":"aronne"}]}];
+let id_count = 3;
 
 function checkPeerReview(toBeCreated)
 {
@@ -28,19 +29,21 @@ function checkPeerReview(toBeCreated)
 }
 
 exports.peerReviews_get_all = (req, res) => {
-    res.json(peerReviews);
+    res.status(200).json(peerReviews);
 };
 
 exports.peerReviews_post_createPeerReviews = (req, res) => {
-    let toCreate = req.body;
-    if(checkPeerReview(toCreate))
+
+    if(checkPeerReview(req.body))
     {
-        peerReviews.push(toCreate);
-        res.status(201).send("Created");
+        peerReviews.push({"id":id_count, "submissionId":req.body.submissionId,
+                    "userId":req.body.userId, "answers":req.body.answers});
+        id_count++;
+        res.status(201).json({message: "Peer review created"});
     }
     else
     {
-        res.status(400).send("Bad request");
+        res.status(400).json({message:"Bad request"});
     }
 };
 
@@ -52,14 +55,13 @@ exports.peerReviews_get_singlePeerReview = (req, res) => {
     }
     else
     {
-        for(var i = 0; i < peerReviews.lenght; i++)
-        {
-            if(peerReviews[i].id == id)
+        console.log(id);
+        peerReviews.forEach(i => {
+            if(i.id == id)
             {
-                res.json(peerReviews[i]);
-                res.status(200).send("Ok");
+                res.status(200).json(i);
             }
-        }
+        })
         res.status(404).send("Not found");
     }
 };
