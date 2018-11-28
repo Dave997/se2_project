@@ -13,17 +13,14 @@ function checkPeerReview(toBeCreated)
     {
         return false;
     }
-    for(var i = 0; i < toBeCreated.answers.lenght; i++)
+    /*if(isNaN(toBeCreated.answers[0]))
     {
-        if(isNaN(i.exerciseId))
-        {
-            return false;
-        }
-        if(typeof i.value != "string")
-        {
-            return false;
-        }
+        return false;
     }
+    /*if(typeof toBeCreated.answers.value !== "object")
+    {
+        return false;
+    }*/
 
     return true;
 }
@@ -51,17 +48,78 @@ exports.peerReviews_get_singlePeerReview = (req, res) => {
     let id = req.params.id;
     if(isNaN(id))
     {
-        res.status(400).send("Bad request");
+        res.status(400).json({message:"Invalid ID supplied"});
     }
     else
     {
-        console.log(id);
         peerReviews.forEach(i => {
             if(i.id == id)
             {
                 res.status(200).json(i);
             }
         })
-        res.status(404).send("Not found");
+        res.status(404).json({message:"Not found"});
+    }
+};
+
+exports.peerReviews_put_updateSinglePeerReview = (req, res) => {
+    let id = req.params.id;
+    if(isNaN(id))
+    {
+        res.status(400).json({message:"Invalid ID supplied"});
+    }
+    else
+    {
+        peerReviews.forEach(i => {
+            if(i.id == id)
+            {
+                if(checkPeerReview(req.body))
+                {
+                    //Aggiorno i campi solo se diversi da stringhe vuote
+                    if(req.body.submissionId !== '')
+                    {
+                        i.submissionId = req.body.submissionId;
+                    }
+                    if(req.body.userId !== '')
+                    {
+                        i.userId = req.body.userId;
+                    }
+                    if(req.body.answers.exerciseId !== '' && req.body.answers.value !== '')
+                    {
+                        i.answers = req.body.answers;
+                    }
+                    res.status(200).json({message: "Peer review updated"});
+                }
+                else
+                {
+                    res.status(400).json({message:"Wrong parameters"});
+                }
+            }
+        })
+        res.status(404).json({message:"Not found"});
+    }
+};
+
+exports.peerReviews_delete_deleteSinglePeerReview = (req, res) => {
+    let id = req.params.id;
+    if(isNaN(id))
+    {
+        res.status(400).json({message:"Invalid ID supplied"});
+    }
+    else
+    {
+        let count = 0;
+        peerReviews.forEach(i => {
+            if(i.id == id)
+            {
+                peerReviews.splice(count, 1);
+                res.status(200).json({message:"Peer review successfully deleted"});
+            }
+            else
+            {
+                count++;
+            }
+        })
+        res.status(404).json({message:"Specified Peer Review Not found"});
     }
 };

@@ -52,14 +52,9 @@ test('POST /peerReviews return 400', async () => {
     const response = await request(url)
     .post('/peerReviews')
     .send({
-        url: url + '/peerReviews',
-        httpMethod: 'post',
-        expectedResultStatus: 400,
-        payload: {
-            submissionId: "potato",
-            userId: 1,
-            answers: [[1, "test di polpetta"]]
-        }
+        submissionId: "potato",
+        userId: 1,
+        answers: [[1, "test di polpetta"]]
     })
     .set('Accept', 'application/json');
 
@@ -70,40 +65,30 @@ test('POST /peerReviews return 400', async () => {
     const response = await request(url)
     .post('/peerReviews')
     .send({
-        url: url + '/peerReviews',
-        httpMethod: 'post',
-        expectedResultStatus: 400,
-        payload: {
-            submissionId: 1,
-            userId: "potato",
-            answers: [[1, "test di polpetta"]]
-        }
+        submissionId: 1,
+        userId: "potato",
+        answers: [[1, "test di polpetta"]]
     })
     .set('Accept', 'application/json');
 
     expect(response.statusCode).toBe(400);
 });
 
-test('POST /peerReviews return 400', async () => {
+/*test('POST /peerReviews return 400', async () => {
     const response = await request(url)
     .post('/peerReviews')
     .send({
-        url: url + '/peerReviews',
-        httpMethod: 'post',
-        expectedResultStatus: 400,
-        payload: {
-            submissionId: 1,
-            userId: 1,
-            answers: [["aronne", "test di polpetta"]]
-        }
+        submissionId: 1,
+        userId: 1,
+        answers: [{exerciseId:"aronne", value:"test di polpetta"}]
     })
     .set('Accept', 'application/json');
 
     expect(response.statusCode).toBe(400);
-});
+});*/
 
 
-// ============================== PeerReviews/:id - GET ==============================
+// ============================== PeerReviews/:id - GET ========================
 test('GET /peerReviews/:id return 200', async () => {
     const response = await request(url).get('/peerReviews/1');
     expect(response.statusCode).toBe(200);
@@ -116,5 +101,104 @@ test('GET /peerReviews/:id return 400 wrong type', async () => {
 
 test('GET /peerReviews/:id return 404', async () => {
     const response = await request(url).get('/peerReviews/999999999');
+    expect(response.statusCode).toBe(404);
+});
+
+
+// ============================== peerReviews - PUT ============================
+test('PUT /peerReviews/:id return 200 without updating', async () => {
+    const response = await request(url)
+    .put('/peerReviews/2')
+    .send({
+        "submissionId": 2,
+        "userId": 2,
+        "answers": [{"exerciseId":2, "value":"aronne"}]
+    })
+    .set('Accept', 'application/json');
+
+    expect(response.statusCode).toBe(200);
+
+});
+
+test('PUT /peerReviews/:id return 200 updating', async () => {
+    const response = await request(url)
+    .put('/peerReviews/2')
+    .send({
+        "submissionId": 222,
+        "userId": 222,
+        "answers": [{"exerciseId":222, "value":"maronn"}]
+    })
+    .set('Accept', 'application/json');
+
+    expect(response.statusCode).toBe(200);
+
+});
+
+test('PUT /peerReviews/:id return 400 invalid param1', async () => {
+    const response = await request(url)
+    .put('/peerReviews/2')
+    .send({
+        submissionId: "potato",
+        userId: 2,
+        answers: [[2, "test di polpetta"]]
+    })
+    .set('Accept', 'application/json');
+
+    expect(response.statusCode).toBe(400);
+});
+
+test('PUT /peerReviews return 400 invalid param2', async () => {
+    const response = await request(url)
+    .put('/peerReviews/2')
+    .send({
+        submissionId: 1,
+        userId: "potato",
+        answers: [[1, "test di polpetta"]]
+    })
+    .set('Accept', 'application/json');
+
+    expect(response.statusCode).toBe(400);
+});
+
+test('PUT /peerReviews return 400 invalid id', async () => {
+    const response = await request(url)
+    .put('/peerReviews/blablabla')
+    .send({
+        submissionId: 1,
+        userId: 1,
+        answers: [["aronne", "test di polpetta"]]
+    })
+    .set('Accept', 'application/json');
+
+    expect(response.statusCode).toBe(400);
+});
+
+test('PUT /peerReviews return 400', async () => {
+    const response = await request(url)
+    .put('/peerReviews/6')
+    .send({
+        submissionId: 1,
+        userId: 1,
+        answers: [["aronne", "test di polpetta"]]
+    })
+    .set('Accept', 'application/json');
+
+    expect(response.statusCode).toBe(404);
+});
+
+
+// ============================== PeerReviews/:id - DELETE =====================
+test('DELETE /peerReviews/:id return 200', async () => {
+    const response = await request(url).delete('/peerReviews/2');
+    expect(response.statusCode).toBe(200);
+});
+
+test('DELETE /peerReviews/:id return 400 wrong type', async () => {
+    const response = await request(url).delete('/peerReviews/hello');
+    expect(response.statusCode).toBe(400);
+});
+
+test('DELETE /peerReviews/:id return 404', async () => {
+    const response = await request(url).delete('/peerReviews/2');
     expect(response.statusCode).toBe(404);
 });
