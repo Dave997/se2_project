@@ -69,10 +69,15 @@ test('GET /users/id return 200', async () => {
 });
 
 //--------------- Error handling ---------------
-test('GET /users/id wrong id return 401', async () => {
-	const response = await request(url).get('/asd'); 
+test('GET /users/id deleted id return 401', async () => {
+	const response = await request(url).get('/5bfec803124054189263178a'); 
 	
 	expect(response.statusCode).toBe(401);
+});
+test('GET /users/id wrong id return 400', async () => {
+	const response = await request(url).get('/asd'); 
+	
+	expect(response.statusCode).toBe(400);
 });
 
 // =================== PUT =================== //
@@ -125,11 +130,8 @@ test('DELETE /users/id should return 200', async() => {
 //--------------- Error handling ---------------
 test('DELETE /users/id delete an already deleted user should return 401', async() => {
 	const response = await request(url).delete('/'+temp_id);
-
-	var obj = JSON.parse(response.text);
 	
 	expect(response.statusCode).toBe(401);
-	expect(obj.message).toBe("User alredy deleted!");
 });
 test('DELETE /users with no id should return 404', async() => {
 	const response = await request(url).delete('/');

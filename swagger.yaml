@@ -24,14 +24,15 @@ paths:
         - application/json
       responses:
         200:
-          description: An array of User IDs
+          description: A json object with a number of users and an array with all users
           examples:
             'application/json':
-                users: [180, 164, 245, 354]
-        400:
-          description: Bad request
-        404:
-          description: Not found
+                count: 1 
+                users: [{
+                  "id": "5bfec803124054189263178d",
+                  "email": "example@example.it",
+                  "name": "example"
+                }]
         500:
           description: Internal server error
 
@@ -54,10 +55,21 @@ paths:
       responses:
         201:
           description: Created
-        400:
-          description: Bad request
+          examples:
+            'application/json':
+                message: 'User created' 
+                user: {
+                  "deleted": 0,
+                  "_id": "5bffa00b0d3ba7179482fdc9",
+                  "email": "example@example.it",
+                  "password": "$2b$10$ui9zXd4NK2UAhUVeymaYpeCdpaUMFrAg6WyHrH3PV1jrNaWkv7yHe",
+                  "name": "example",
+                  "__v": 0
+                }
         401:
-          description: Unauthorized
+          description: Bad parameters
+        409:
+          description: User already exists
         500:
           description: Internal server error
 
@@ -68,7 +80,7 @@ paths:
         - in: path
           name: userId
           required: true
-          type: integer
+          type: string
           description: The ID of the User
       responses:
         200:
@@ -78,9 +90,7 @@ paths:
         400:
           description: The specified User ID is invalid
         401:
-          description: Unauthorized
-        404:
-          description: A User with the specified ID was not found
+          description: User not found 
         500:
           description: Internal server error
 
@@ -98,20 +108,23 @@ paths:
         type: integer
         description: The ID of the User
       - in: body
-        name: User
-        description: The User to update
-        required: true
+        name: user field(s)
+        description: The fields of user to update
         schema:
-          $ref: '#/definitions/User'
+          type: object
+          properties:
+            email:
+              type: string
+            name:
+              type: string
+      
       responses:
         200:
           description: Updated
         400:
           description: Invalid ID supplied
         401:
-          description: Unauthorized
-        404:
-          description: A User with the specified ID was not found
+          description: Bad Parameters 
         500:
           description: Internal server error
 
@@ -129,16 +142,14 @@ paths:
         in: path
         description: User ID to delete
         required: true
-        type: integer
-        format: int64
+        type: string
       responses:
         200:
           description: OK
-        400:
-          description: Invalid ID supplied
+          examples:
+            'application/json':
+              message": "User 5bffa00b0d3ba7179482fdc9 deleted!"
         401:
-          description: Unauthorized
-        404:
           description: A User with the specified ID was not found
         500:
           description: Internal server error
@@ -895,19 +906,22 @@ definitions:
     type: object
     properties:
       id:
-        type: integer
-        example: 123
-        format: int64
+        type: string
+        example: 5bfec803124054189263178d
       name:
         type: string
         example: Polpetta
       email:
         type: string
         example: polpetta@mail.it
+      password:
+        type: string
+        example: $2b$10$UvjvmLckx3wEoeHrpiqJme7i7p0k84TwLCMSQ.QuSjkkqvHTuvOAe
     required:
       - id
       - name
       - email
+      - password
 
   Exercise:
     type: object

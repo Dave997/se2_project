@@ -18,7 +18,6 @@ exports.user_get_all = (req, res, next) => {
 				response.push({
 					id:user._id,
 					email:user.email,
-					password:user.password,
 					name:user.name
 				});				
 			});
@@ -59,8 +58,8 @@ exports.users_get_userInfo = (req, res, next) => {
 			});
 		})
 		.catch(err => {
-			return res.status(401).json({
-				message: "User not found!"
+			return res.status(400).json({
+				message: "Invalid id"
 			});
 		});
 
@@ -214,32 +213,25 @@ exports.user_post_login = (req, res, next) => {
 		});
 };
 
-exports.user_delete_deleteUser = (req, res, next) => {
+exports.user_delete_deleteUser = async (req, res, next) => {
 	const id = req.params.userId;
 
 	// check if user exists
-	User.find({	_id: id})
-		.exec()
-		.then(user => {
-			if (user.length < 1) {
-				return res.status(401).json({
-					message: "User not found!"
-				});
-			}
-			if(user[0].deleted == 1){
-				return res.status(401).json({
-					message: "User alredy deleted!"
-				});
-			}
-		})
-		.catch(err => {
+	User.find({
+		_id: id,
+		deleted : 0 
+	})
+	.exec()
+	.then(user => {
+
+		if (user.length < 1) {
 			return res.status(401).json({
 				message: "User not found!"
 			});
-		});
+		}
 
-	// set deleted bit
-	User.update({
+		// set deleted bit
+		User.update({
 			_id: id
 		}, {
 			deleted: 1
@@ -255,6 +247,12 @@ exports.user_delete_deleteUser = (req, res, next) => {
 				error: err
 			});
 		});
+	})
+	.catch(err => {
+		return res.status(401).json({
+			message: "User not found!"
+		});
+	});	
 
 	/*
 	var count = 0;
@@ -302,6 +300,17 @@ exports.user_delete_deleteUser = (req, res, next) => {
 exports.user_put_modify = (req, res, next) => {
 	const id = req.params.userId;
 
+	var new_user = {};
+	if(req.body.email)
+		new_user.email = req.body.email;
+	if(req.body.name)
+		new_user.name = req.body.name;
+
+	if(Object.keys(new_user).length	== 0)
+		return res.status(401).json({
+			message: "Bad parameters"
+		});	
+
 	// check if user exists
 	User.find({
 			_id: id,
@@ -314,38 +323,26 @@ exports.user_put_modify = (req, res, next) => {
 					message: "User not found!"
 				});
 			}
-		})
-		.catch(err => {
-			console.log(err);
-			res.status(500).json({
-				error: err
-			});
-		});
 
-	var new_user = {};
-	if(req.body.email)
-		new_user.email = req.body.email;
-	else if(req.body.name)
-		new_user.name = req.body.name;
-	else
-		return res.status(401).json({
-			message: "Bad parameters"
-		});		
-
-	console.log(new_user);
-
-	User.update({_id:id},{$set:new_user})
-		.exec()
-		.then(result => {
-			return res.status(200).json({
-				message:'user ' + id + ' updated!',
-				new_fields:new_user
+			User.update({_id:id},{$set:new_user})
+			.exec()
+			.then(result => {
+				return res.status(200).json({
+					message:'user ' + id + ' updated!',
+					new_fields:new_user
+				})
 			})
+			.catch(err => {
+				console.log(err);
+				res.status(500).json({
+					error: err
+				});
+			});
 		})
 		.catch(err => {
 			console.log(err);
 			res.status(500).json({
 				error: err
 			});
-		});
+		});	
 };
