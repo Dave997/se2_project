@@ -1,7 +1,7 @@
 const request = require('supertest');
 const url = 'http://localhost:3000/submissions';
 
-let submission = undefined;
+let submission = {};
 
 // CREATE
 test('POST /submissions => return 201 Submission created', async () => {
@@ -13,7 +13,7 @@ test('POST /submissions => return 201 Submission created', async () => {
 
     // Save the object created
     submission = response.body.submission;
-    
+
     // Check the status code
     expect(response.statusCode).toBe(201);
     
@@ -25,13 +25,13 @@ test('POST /submissions => return 201 Submission created', async () => {
 
 // UPDATE
 test('PUT /submissions => return 200 Updated', async () => {
-    let url_id = '/' + submission.id;
+    let url_id = '/' + submission._id;
     const response = await request(url).put(url_id).send({
         answer: 'New answer'
     });
 
     // Save the object created
-    submission = response.body.submission;
+    submission.answer = response.body.updated_field.answer;
     
     // Check the status code
     expect(response.statusCode).toBe(200);
@@ -42,7 +42,7 @@ test('PUT /submissions => return 200 Updated', async () => {
 
 // GET ID
 test('GET /submissions/id => return 200 and a Submission object', async () => {
-    let url_id = '/' + submission.id;
+    let url_id = '/' + submission._id;
     const response = await request(url).get(url_id);
     
     // Check the status code
@@ -61,12 +61,13 @@ test('GET /submissions => return 200 and a Submission object', async () => {
     
     // TODO: find better tests
     // Check if the list contains at least one object
-    expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body.submissions.length).toBeGreaterThan(0);
 });
+
 
 // DELETE
 test('DELETE /submissions/id => return 200 OK', async () => {
-    let url_id = '/' + submission.id;
+    let url_id = '/' + submission._id;
     const response = await request(url).delete(url_id);
 
     // Check the status code
@@ -75,7 +76,7 @@ test('DELETE /submissions/id => return 200 OK', async () => {
 
 // GET ID - NOT FOUND
 test('GET /submissions/id with the id of a deleted submission => return 404 Not found', async () => {
-    let url_id = '/' + submission.id;
+    let url_id = '/' + submission._id;
     const response = await request(url).get(url_id);
     
     // Check the status code
@@ -84,7 +85,8 @@ test('GET /submissions/id with the id of a deleted submission => return 404 Not 
 
 // UPDATE - NOT FOUND
 test('PUT /submissions/id with the id of a deleted submission => return 404 Not found', async () => {
-    const response = await request(url).put('/a').send({
+    let url_id = '/' + submission._id;
+    const response = await request(url).put(url_id).send({
         answer: 'New answer'
     });
 
@@ -94,7 +96,7 @@ test('PUT /submissions/id with the id of a deleted submission => return 404 Not 
 
 // DELETE - NOT FOUND
 test('DELETE /submissions/id with the id of a deleted submission => return 404 Not found', async () => {
-    let url_id = '/' + submission.id;
+    let url_id = '/' + submission._id;
     const response = await request(url).delete(url_id);
 
     // Check the status code

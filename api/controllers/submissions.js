@@ -1,39 +1,20 @@
-const Submission = require("../models/submission");
-const mongoose = require("mongoose");
+const Submission = require('../models/submission');
+const mongoose = require('mongoose');
 
-var submissions = [];
-/*
-[{
-        "id": 1111111111111,
-        "taskId": 1,
-        "userId": 3,
-        "answer": "answer",
-        "deleted": false
-    },
-    {
-        "id": Date.now(),
-        "taskId": 2222222222222,
-        "userId": 4,
-        "answer": "new answer",
-        "deleted": false
-    }
-];
-*/
-
-exports.submissions_get_all = (req, res, next) => {
-    return res.status(200).json(submissions.filter(submission => (!submission.deleted)));
-    /*
+exports.submissions_get_all = (req, res) => {
     Submission.find({
-            deleted: 0
-        })
-        .exec()
-        .then(submissions => {
-
+        deleted: 0
+    }).then(submissions => {
+        if (!submissions || submissions.length === 0) {
+            res.status(400).json({
+                error: "Bad request or not found"
+            });
+        } else {
             var response = [];
 
             submissions.forEach(submission => {
                 response.push({
-                    id: submission._id,
+                    _id: submission._id,
                     taskId: submission.taskId,
                     userId: submission.userId,
                     answer: submission.answer
@@ -41,133 +22,173 @@ exports.submissions_get_all = (req, res, next) => {
             });
 
             return res.status(200).json({
-                count: response.length,
-                submissions: response
+                'submissions': response
             });
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            });
+        }
+    }).catch(err => {
+        return res.status(500).json({
+            message: err
         });
-        */
+    });
 }
 
-exports.submissions_get_submissionInfo = (req, res, next) => {
-    let submission = readSubmissionById(req.params.submissionId);
-    if (submission != undefined) {
-        return res.status(200).json({
-            submission
-        });
-    } else {
-        return res.status(404).json({
-            message: "Submission not found"
+exports.submissions_get_submissionInfo = (req, res) => {
+    if (!req.params.submissionId) {
+        res.status(400).json({
+            messsage: "Bad request"
         });
     }
+
+    Submission.find({
+        _id: req.params.submissionId
+    }).then(submission => {
+        if (!submission || submission[0].deleted) {
+            res.status(404).json({
+                message: "Not found"
+            });
+        } else {
+            return res.status(200).json({
+                'submission': {
+                    _id: submission[0]._id,
+                    taskId: submission[0].taskId,
+                    userId: submission[0].userId,
+                    answer: submission[0].answer
+                }
+            });
+        }
+    }).catch(err => {
+        return res.status(500).json({
+            message: err
+        });
+    });
 }
 
-exports.submissions_post_createSubmission = (req, res, next) => {
+exports.submissions_post_createSubmission = (req, res) => {
     if (!req.body.taskId ||
         !req.body.userId ||
         !req.body.answer ||
         req.body.taskId.length == 0 ||
         req.body.userId.length == 0) {
         return res.status(400).json({
-            message: "Bad request"
+            message: 'Bad request'
         });
     }
 
-    let submission = {
-        "id": Date.now(),
-        "taskId": req.body.taskId,
-        "userId": req.body.userId,
-        "answer": req.body.answer,
-        "deleted": false
-    };
-
-    submissions.push(submission);
-
-    return res.status(201).json({
-        submission
+    const submission = new Submission({
+        _id: new mongoose.Types.ObjectId(),
+        taskId: req.body.taskId,
+        userId: req.body.userId,
+        answer: req.body.answer
     });
 
+    submission.save((err) => {
+        if (err) {
+            res.status(500).json({
+                message: err
+            });
+        }
+        res.status(201).json({
+            'submission': {
+                _id: submission._id,
+                taskId: submission.taskId,
+                userId: submission.userId,
+                answer: submission.answer
+            }
+        });
+    });
 };
 
-exports.submissions_post_deleteSubmission = (req, res, next) => {
-    if (!req.params.submissionId ||
-        req.params.submissionId.length != 0) {
+exports.submissions_post_deleteSubmission = (req, res) => {
+    if (!req.params.submissionId) {
+        res.status(400).json({
+            messsage: "Bad request"
+        });
+    }
 
-        submission = submissions.find(submission => submission.id == req.params.submissionId && !submission.deleted);
-        if (submission) {
-            submission.deleted = true;
-            return res.status(200).json({
-                message: "Deleted"
-            });
-        } else {
-            return res.status(404).json({
+    Submission.find({
+        _id: req.params.submissionId
+    }).then(submission => {
+        if (!submission || submission[0].deleted) {
+            res.status(404).json({
                 message: "Not found"
             });
         }
-    } else {
-        return res.status(400).json({
-            message: "Bad request"
+    }).catch(err => {
+        return res.status(500).json({
+            message: err
         });
-    }
+    });
+
+    let submission_deleted = {};
+    submission_deleted.deleted = true;
+
+    Submission.update({
+            _id: req.params.submissionId
+        }, {
+            $set: submission_deleted
+        })
+        .then(err => {
+            res.status(200).json({
+                message: 'Submission deleted'
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
 };
 
-exports.submissions_put_updateSubmission = (req, res, next) => {
-    if (req.params.submissionId ||
-        req.params.submissionId.length != 0) {
-        submission = submissions.find(submission => submission.id == req.params.submissionId && !submission.deleted);
-        if (submission) {
-            if (req.body.taskId) {
-                submission.taskId = req.body.taskId;
-            }
-            if (req.body.userId) {
-                submission.userId = req.body.userId;
-            }
-            if (req.body.answer) {
-                submission.answer = req.body.answer;
-            }
-            submission = submissions.find(submission => submission.id == req.params.submissionId && !submission.deleted);
-            return res.status(200).json({
-                submission
-            });
-        } else {
-            return res.status(404).json({
+// TODO: trovare il modo di tornare l'oggetto aggiornato completo, non soltanto i campi aggiornati 
+exports.submissions_put_updateSubmission = (req, res) => {
+    if (!req.params.submissionId) {
+        res.status(400).json({
+            messsage: "Bad request"
+        });
+    }
+
+    console.log('\n\n' + req.params.submissionId + '\n\n');
+
+    Submission.find({
+        _id: req.params.submissionId
+    }).then(submission => {
+        if (!submission || submission[0].deleted) {
+            res.status(404).json({
                 message: "Not found"
             });
         }
-    } else {
-        return res.status(400).json({
-            message: "Bad request"
+    }).catch(err => {
+        return res.status(500).json({
+            message: err
         });
+    });
+
+    let submission_updated = {};
+    if (req.body.taskId) {
+        submission_updated.taskId = req.body.taskId;
     }
+    if (req.body.userId) {
+        submission_updated.userId = req.body.userId;
+    }
+    if (req.body.answer) {
+        submission_updated.answer = req.body.answer;
+    }
+
+    Submission.update({
+            _id: req.params.submissionId
+        }, {
+            $set: submission_updated
+        })
+        .then(err => {
+            res.status(200).json({
+                'updated_field': submission_updated
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
 };
-
-function readSubmissionById(id) {
-    return submissions.find(submission => (submission.id == id && !submission.deleted));
-}
-
-function cleanArray(array) {
-    array.map(x => {
-        let tmp = {};
-        for (let key in x)
-            if (key != 'deleted')
-                tmp[key] = x[key];
-        return tmp;
-    });
-}
-
-function cleanObject(object) {
-    object.map(x => {
-        let tmp = {};
-        for (let key in x)
-            if (key != 'deleted')
-                tmp[key] = x[key];
-        return tmp;
-    });
-}
 
 //TODO: controllare consistenza con swagger.yaml (es: quando aggiorno devo ritornare l'oggetto aggiornato??)
