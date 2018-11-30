@@ -1,14 +1,18 @@
 const request = require('supertest');
+const fetch = require ('node-fetch');
 
 const url = "http://localhost:3000/users";
 
 var temp_id = undefined;
+var temp_email = "autoTest"+Date.now()+"@test.it";
+var temp_password = "autoTest";
+var temp_token = undefined;
 
 // ================== POST ================== //
 test('POST /users should return 201 user created!', async () => {
 	const response = await request(url).post('/').send({
-		email: "autoTest"+Date.now()+"@test.it",
-		password: "autoTest",
+		email: temp_email,
+		password: temp_password,
         name: "autoTest"
 	});
 
@@ -89,16 +93,20 @@ test('PUT /users/id modify name should return 200', async() => {
 	expect(response.statusCode).toBe(200);
 });
 test('PUT /users/id modify email should return 200', async() => {
+	temp_email = "modified_email"+Date.now()+"@test.it";
+
 	const response = await request(url).put('/'+temp_id).send({
-		email: "modified_email"+Date.now()+"@test.it",
+		email: temp_email
 	});
 
 	expect(response.statusCode).toBe(200);
 });
 test('PUT /users/id modify name and mail should return 200', async() => {
+	temp_email = "new_modified_email"+Date.now()+"@test.it";
+
 	const response = await request(url).put('/'+temp_id).send({
 		name: "new_modified_name",
-		email: "new_modified_email"+Date.now()+"@test.it"
+		email: temp_email
 	});
 
 	expect(response.statusCode).toBe(200);
@@ -120,18 +128,39 @@ test('PUT /users/id wrong parameter name should return 401', async() => {
 	expect(response.statusCode).toBe(401);
 });
 
+// ================== LOGIN ================== //
+test('POST /users/login should return 200', async() => {
+	const response = await request(url).post('/login').send({
+		email: temp_email,
+		password: temp_password
+	});
+
+	var obj = JSON.parse(response.text);
+	temp_token = obj.token;
+	
+	expect(response.statusCode).toBe(200);
+});
+
 // ================== DELETE ================== //
 test('DELETE /users/id should return 200', async() => {
-	const response = await request(url).delete('/'+temp_id);
-
-	expect(response.statusCode).toBe(200);
+	return fetch(url + '/' + temp_id, {
+		method: 'DELETE',
+		headers: {
+			'Accept': 'application/json',
+			'Authorization': 'Bearer ' + temp_token
+		}
+	}).then(res => {expect(res.status).toBe(200)});
 });
 
 //--------------- Error handling ---------------
 test('DELETE /users/id delete an already deleted user should return 401', async() => {
-	const response = await request(url).delete('/'+temp_id);
-	
-	expect(response.statusCode).toBe(401);
+	return fetch(url + '/' + temp_id, {
+		method: 'DELETE',
+		headers: {
+			'Accept': 'application/json',
+			'Authorization': 'Bearer ' + temp_token
+		}
+	}).then(res => {expect(res.status).toBe(401)});
 });
 test('DELETE /users with no id should return 404', async() => {
 	const response = await request(url).delete('/');
@@ -139,7 +168,16 @@ test('DELETE /users with no id should return 404', async() => {
 	expect(response.statusCode).toBe(404);
 });
 test('DELETE /users with wrong id should return 401', async() => {
-	const response = await request(url).delete('/asd');
+	return fetch(url + '/asd', {
+		method: 'DELETE',
+		headers: {
+			'Accept': 'application/json',
+			'Authorization': 'Bearer' + temp_token
+		}
+	}).then(res => {expect(res.status).toBe(401)})
+});
+test('DELETE /users unauthorized user should return 401', async() => {
+	const response = await request(url).delete('/'+temp_id);
 
 	expect(response.statusCode).toBe(401);
 });
