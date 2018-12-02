@@ -1,5 +1,8 @@
 const request = require('supertest');
-const url = require('../../app.js');
+//const url = require('../../app.js');
+const url = "http://localhost:3000";
+const mongoose = require("mongoose");
+
 
 let temp_id;
 
@@ -185,11 +188,60 @@ test('GET /tasks/:id should return the specified task', async () => {
 });
 
 
+test('GET /tasks/:id return 404', async () => {
+    const response = await request(url).get('/tasks/' + new mongoose.Types.ObjectId());
+    expect(response.statusCode).toBe(404);
+});
+
 
 
 
 
 // ============================== Tasks/:id - PUT ==============================
+test('PUT /tasks/:id modify name should return 200', async() => {
+	const response = await request(url).put('/tasks/' + temp_id).send({
+		name: "modified_name"
+	});
+
+	expect(response.statusCode).toBe(200);
+    expect(response.body.name).toBe("modified_name");
+});
+
+
+test('PUT /tasks/:id modify exercises should return 200', async() => {
+	const response = await request(url).put('/tasks/' + temp_id).send({
+		exercises: [10,9,8,7,6]
+	});
+
+	expect(response.statusCode).toBe(200);
+    expect(response.body.exercises[0]).toBe(10);
+    expect(response.body.exercises[1]).toBe(9);
+    expect(response.body.exercises[2]).toBe(8);
+    expect(response.body.exercises[3]).toBe(7);
+    expect(response.body.exercises[4]).toBe(6);
+
+});
+
+
+test('PUT /tasks/:id modify name exercises should return 200', async() => {
+	const response = await request(url).put('/tasks/' + temp_id).send({
+        name: "name_modified_again",
+		exercises: [1]
+	});
+
+	expect(response.statusCode).toBe(200);
+    expect(response.body.name).toBe("name_modified_again");
+    expect(response.body.exercises[0]).toBe(1);
+});
+
+
+test('PUT /tasks/:id wrong id should return 401', async() => {
+	const response = await request(url).put('/tasks/' + new mongoose.Types.ObjectId()).send({
+		name: "modified_name"
+	});
+
+	expect(response.statusCode).toBe(401);
+});
 
 
 

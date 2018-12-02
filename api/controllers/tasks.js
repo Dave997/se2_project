@@ -133,3 +133,71 @@ exports.tasks_get_singleTask = (req, res) => {
         return res.status(500).json({error: err});
     });
 };
+
+
+
+
+exports.task_put_modify = (req, res) => {
+	const id = req.params.id;
+
+	var new_task = {};
+	if(req.body.name)
+	{
+        new_task.name = req.body.name;
+    }
+    if(req.body.exercises)
+    {
+        new_task.exercises = req.body.exercises;
+    }
+
+	if(Object.keys(new_task).length	== 0)
+    {
+		return res.status(401).send("Bad parameters");
+    }
+
+    Task.find({_id:id,deleted:0},{deleted:0})
+    .exec()
+    .then(doc => {
+        if(typeof doc[0] != 'undefined'){
+            Task.update({_id:id},{$set:new_task})
+			.exec()
+			.then(result => {
+                Task.find({_id:id,deleted:0},{deleted:0})
+                .exec()
+                .then(modified => {
+                    if(typeof modified[0] != 'undefined'){
+                        return res.status(200).json({
+                            id: modified[0]._id,
+                            name: modified[0].name,
+                            exercises: modified[0].exercises
+                        });
+                    }
+                    else
+                    {
+                        return res.status(404).send("Not found");
+                    }
+
+                })
+                .catch(err => {
+                    console.log(err);
+                    return res.status(500).json({error: err});
+                });
+			})
+			.catch(err => {
+				console.log(err);
+				return res.status(500).json({
+					error: err
+				});
+			});
+        }
+        else
+        {
+            return res.status(401).send("Not found");
+        }
+
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).json({error: err});
+    });
+};
