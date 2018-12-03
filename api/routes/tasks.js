@@ -12,4 +12,6 @@ router.get("/:id", TaskController.tasks_get_singleTask);
 
 router.put("/:id", TaskController.task_put_modify);
 
+router.delete("/:id", TaskController.task_delete_deleteTask);
+
 module.exports = router;

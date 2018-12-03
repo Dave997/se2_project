@@ -235,12 +235,12 @@ test('PUT /tasks/:id modify name exercises should return 200', async() => {
 });
 
 
-test('PUT /tasks/:id wrong id should return 401', async() => {
+test('PUT /tasks/:id wrong id should return 404', async() => {
 	const response = await request(url).put('/tasks/' + new mongoose.Types.ObjectId()).send({
 		name: "modified_name"
 	});
 
-	expect(response.statusCode).toBe(401);
+	expect(response.statusCode).toBe(404);
 });
 
 
@@ -249,3 +249,22 @@ test('PUT /tasks/:id wrong id should return 401', async() => {
 
 
 // ============================== Tasks/:id - DELETE ==============================
+test('DELETE /tasks/:id should return 200', async() => {
+	const response = await request(url).delete('/tasks/' + temp_id);
+
+	expect(response.statusCode).toBe(200);
+});
+
+
+test('DELETE /tasks/:id with already deleted task should return 404', async() => {
+	const response = await request(url).delete('/tasks/' + temp_id);
+
+	expect(response.statusCode).toBe(404);
+});
+
+
+test('DELETE /tasks/:id with non existing id should return 404', async() => {
+	const response = await request(url).delete('/tasks/' + new mongoose.Types.ObjectId());
+
+	expect(response.statusCode).toBe(404);
+});

@@ -192,7 +192,38 @@ exports.task_put_modify = (req, res) => {
         }
         else
         {
-            return res.status(401).send("Not found");
+            return res.status(404).send("Not found");
+        }
+
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).json({error: err});
+    });
+};
+
+
+
+
+exports.task_delete_deleteTask = async (req, res) => {
+	const id = req.params.id;
+    Task.find({_id:id,deleted:0})
+    .exec()
+    .then(doc => {
+        if(typeof doc[0] != 'undefined'){
+            Task.update({_id:id},{deleted:1})
+			.exec()
+			.then(result => {
+                return res.status(200).send("OK");
+            })
+            .catch(err => {
+                console.log(err);
+                return res.status(500).json({error: err});
+            });
+        }
+        else
+        {
+            return res.status(404).send("Not found");
         }
 
     })
