@@ -207,6 +207,14 @@ test('PUT /tasks/:id modify name should return 200', async() => {
     expect(response.body.name).toBe("modified_name");
 });
 
+test('PUT /tasks/:id modify name again to check IDEMPOTENT behavior should return 200', async() => {
+	const response = await request(url).put('/tasks/' + temp_id).send({
+		name: "modified_name"
+	});
+
+	expect(response.statusCode).toBe(200);
+    expect(response.body.name).toBe("modified_name");
+});
 
 test('PUT /tasks/:id modify exercises should return 200', async() => {
 	const response = await request(url).put('/tasks/' + temp_id).send({
