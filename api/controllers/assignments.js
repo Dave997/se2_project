@@ -20,7 +20,12 @@ async function assignment_get_all() {
 }
 
 async function assignment_get_by_id (id) {
-  return Assignment.findById(id).exec();
+  return Assignment.findOne({ _id: id , deleted:false}).exec();
+}
+
+
+async function assignment_delete_by_id (id) {
+  return Assignment.findOneAndUpdate({_id:id, deleted:false}, {$set:{deleted:true}}).exec();
 }
 
 async function assignment_create(body) {
@@ -40,9 +45,23 @@ async function assignment_create(body) {
   return assignment.save();
 }
 
+async function assignment_update(id, body) {
+  let canUpdateFiels = ['name', 'taskId', 'userGroupId', 'deadline'];
+  let wantUpdate = Object.keys(body);
+
+  if(!wantUpdate.every(k => canUpdateFiels.includes(k)))
+    return undefined;
+  
+  // TODO: SHOULD CHECK VALID VALUES
+  return Assignment.findOneAndUpdate({_id:id, deleted:false},{$set:body}).exec();
+    
+}
+
 module.exports = {
   assignment_clean,
   assignment_get_all,
   assignment_create,
-  assignment_get_by_id
+  assignment_get_by_id,
+  assignment_delete_by_id,
+  assignment_update
 };

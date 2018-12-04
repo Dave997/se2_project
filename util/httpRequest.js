@@ -23,7 +23,7 @@ async function PutJson(url, json) {
 }
 
 async function Delete(url) {
-  return  fetch(url, {method:'delete'});
+  return  fetch(url, {method:'DELETE'});
 }
 
 module.exports = {Get, PostJson, PutJson, Delete};
