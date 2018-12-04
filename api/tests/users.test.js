@@ -2,7 +2,7 @@ const request = require('supertest');
 const fetch = require ('node-fetch');
 
 const config = require('../../config');
-const url = config.server_path+"users";
+const url = config.SERVER_PATH+"users";
 
 var temp_id = undefined;
 var temp_email = "autoTest"+Date.now()+"@test.it";

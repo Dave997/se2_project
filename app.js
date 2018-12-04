@@ -4,21 +4,10 @@ const morgan = require('morgan'); //middleware for authentication
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-// const exercises = require('./api/routes/exercises');
 const users = require('./api/routes/users');
+const config = require('./config');
 
-// DB connection
-// local db installation tutorial: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
-
-//mongoose.connect('mongodb://nathaniellee:'
-//    + process.env.MONGO_ATLAS_PSW  +'@se2nathaniellee-shard-00-00-kcdnu.gcp.mongodb.net:27017,se2nathaniellee-shard-00-01-kcdnu.gcp.mongodb.net:27017,se2nathaniellee-shard-00-02-kcdnu.gcp.mongodb.net:27017/test?ssl=true&replicaSet=SE2Nathaniellee-shard-0&authSource=admin&retryWrites=true');
-//     {
-//         useMongoClient: true
-//     });
-// mongoose.Promise = global.Promise;
-
-// N.B. remember to make the db run! $> sudo service mongod start
-mongoose.connect(process.env.DB_PATH);
+mongoose.connect(config.DB_PATH);
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false})); //this would parse urlencoded requets, without rich-extended options (false)
