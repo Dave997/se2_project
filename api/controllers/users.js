@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const config = require('../../config');
+
 exports.user_get_all = (req, res, next) => {
 
 	User.find({deleted:0})
@@ -233,7 +235,7 @@ exports.user_post_login = (req, res, next) => {
 							email: user[0].email,
 							userId: user[0]._id
 						},
-						process.env.JWT_KEY, {
+						config.JWT_KEY, {
 							expiresIn: "1h"
 						}
 					);
