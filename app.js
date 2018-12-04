@@ -1,4 +1,4 @@
-const express = require('express'); // this will use express to handle request
+const express = require('express');
 const app = express();
 const morgan = require('morgan'); //middleware for authentication
 const bodyParser = require('body-parser');
@@ -12,7 +12,6 @@ mongoose.connect(config.DB_PATH);
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false})); //this would parse urlencoded requets, without rich-extended options (false)
 app.use(bodyParser.json()); // this will extract json data from requests
-
 
 // headers to prevent CORS errors
 app.use((req, res, next) => {

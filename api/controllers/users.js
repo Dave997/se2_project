@@ -35,7 +35,6 @@ exports.user_get_all = (req, res, next) => {
 };
 
 exports.users_get_userInfo = (req, res, next) => {
-
 	User.find({
 			_id: req.params.userId
 		})
@@ -62,7 +61,6 @@ exports.users_get_userInfo = (req, res, next) => {
 };
 
 exports.users_post_createUser = (req, res, next) => {
-
 	//check all fields
 	if (req.body.name == undefined || req.body.password == undefined || req.body.email == undefined) {
 		return res.status(401).json({
