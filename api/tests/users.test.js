@@ -1,12 +1,15 @@
 const request = require('supertest');
 const fetch = require ('node-fetch');
 
-const url = "http://localhost:3000/users";
+const config = require('../../config');
+const url = config.server_path+"users";
 
 var temp_id = undefined;
 var temp_email = "autoTest"+Date.now()+"@test.it";
 var temp_password = "autoTest";
 var temp_token = undefined;
+
+console.log(url);
 
 // ================== POST ================== //
 test('POST /users should return 201 user created!', async () => {
