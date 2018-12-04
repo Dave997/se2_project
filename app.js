@@ -2,7 +2,7 @@ const express = require('express'); // this will use express to handle request
 const app = express();
 // const morgan = require('morgan'); //middleware for authentication
 const bodyParser = require('body-parser');
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 // const exercises = require('./api/routes/exercises');
 // const users = require('./api/routes/users');
@@ -15,6 +15,8 @@ const peerReviews = require('./api/routes/peerReviews');
 //         useMongoClient: true
 //     });
 // mongoose.Promise = global.Promise;
+
+mongoose.connect("mongodb://localhost:27017");
 
 // app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false})); //this would parse urlencoded requets, without rich-extended options (false)

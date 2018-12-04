@@ -1,8 +1,10 @@
 const express = require('express');
-
 const router = express.Router();
 
+const PeerReview = require("../models/peerReviews");
 const PeerReviewscontroller = require("../controllers/peerReviews");
+
+
 
 router.get("/", PeerReviewscontroller.peerReviews_get_all);
 
