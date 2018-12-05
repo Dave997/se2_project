@@ -67,3 +67,6 @@ Postman/
 
 # nodemon.json
 nodemon.json
+
+# package-lock.json
+package-lock.json
