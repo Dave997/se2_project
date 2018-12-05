@@ -3,15 +3,8 @@ const assignments = require("../controllers/assignments");
 
 const router = express.Router();
 
-function initialize_db(){
-  Assignment.deleteMany().exec().then(res =>{
-    // OK
-  }).catch(err=>{
-    console.error("Error in db initialization: "+err);
-  });
-}
-
 router.get('/', (req, res) => {
+  console.log("AOOOOOOOOOOOOOOOOOOOOOO!!")
   let promise = assignments.assignment_get_all();
   promise.then(query => {
     let response = query.map(a => assignments.assignment_clean(a));
