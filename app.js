@@ -5,8 +5,11 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const submissions = require('./api/routes/submissions');
-//const peerReviews = require('./api/routes/peerReviews');
+const peerReviews = require('./api/routes/peerReviews');
 const users = require('./api/routes/users');
+const tasks = require('./api/routes/tasks');
+const assignments = require('./api/routes/assignments');
+
 const config = require('./config');
 
 mongoose.connect(config.DB_PATH);
@@ -37,8 +40,10 @@ app.use((req, res, next) => {
 // app.use("/exercises", exercises);
 // app.use('/users', users);
 app.use('/submissions', submissions);
-//app.use('/peerReviews', peerReviews);
+app.use('/peerReviews', peerReviews);
 app.use('/users', users);
+app.use('/tasks', tasks);
+app.use('/assignments', assignments);
 
 // if the server reach that line, none of the routes above was able to process the request, so i should send an error message
 app.use((req, res, next) => {
