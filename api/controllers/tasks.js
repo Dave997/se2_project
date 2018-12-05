@@ -46,7 +46,7 @@ exports.tasks_get_all = (req, res) => {
             }
             else
             {
-                return res.status(404).send("Not found");
+                return res.status(404).json({"message":"Not found"});
             }
         })
         .catch(err => {
@@ -56,7 +56,7 @@ exports.tasks_get_all = (req, res) => {
     }
     else if (!isNaN(req.query.name)) // name filter is a number
     {
-        return res.status(400).send("Bad request");
+        return res.status(400).json({"message":"Bad request"});
     }
     else // name filter is a string
     {
@@ -71,7 +71,7 @@ exports.tasks_get_all = (req, res) => {
             }
             else
             {
-                return res.status(404).send("Not found");
+                return res.status(404).json({"message":"Not found"});
             }
         })
         .catch(err => {
@@ -94,7 +94,7 @@ exports.tasks_post_createTask = (req, res) => {
         task.save()
         .then(result => {
             //console.log(result);
-            return res.status(201).send("Created");
+            return res.status(201).json({"message":"Created"});
         })
         .catch(err => {
             console.log(err);
@@ -105,7 +105,7 @@ exports.tasks_post_createTask = (req, res) => {
     }
     else // invalid format of the task
     {
-        return res.status(400).send("Bad request");
+        return res.status(400).json({"message":"Bad request"});
     }
 };
 
@@ -124,7 +124,7 @@ exports.tasks_get_singleTask = (req, res) => {
         }
         else
         {
-            return res.status(404).send("Not found");
+            return res.status(404).json({"message":"Not found"});
         }
 
     })
@@ -152,7 +152,7 @@ exports.task_put_modify = (req, res) => {
 
 	if(Object.keys(new_task).length	== 0)
     {
-		return res.status(401).send("Bad parameters");
+		return res.status(401).json({"message":"Bad parameters"});
     }
 
     Task.find({_id:id,deleted:0},{deleted:0})
@@ -174,7 +174,7 @@ exports.task_put_modify = (req, res) => {
                     }
                     else
                     {
-                        return res.status(404).send("Not found");
+                        return res.status(404).json({"message":"Not found"});
                     }
 
                 })
@@ -192,7 +192,7 @@ exports.task_put_modify = (req, res) => {
         }
         else
         {
-            return res.status(404).send("Not found");
+            return res.status(404).json({"message":"Not found"});
         }
 
     })
@@ -214,7 +214,7 @@ exports.task_delete_deleteTask = async (req, res) => {
             Task.update({_id:id},{deleted:1})
 			.exec()
 			.then(result => {
-                return res.status(200).send("OK");
+                return res.status(200).json({"message":"OK"});
             })
             .catch(err => {
                 console.log(err);
@@ -223,7 +223,7 @@ exports.task_delete_deleteTask = async (req, res) => {
         }
         else
         {
-            return res.status(404).send("Not found");
+            return res.status(404).json({"message":"Not found"});
         }
 
     })

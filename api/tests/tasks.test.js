@@ -4,9 +4,12 @@ const url = "http://localhost:3000";
 const mongoose = require("mongoose");
 
 
+
 let temp_id;
 
-// inizialize db
+// inizialize db.
+// NB: the two last entries in the DB will be FirstTask and SecondTask
+// for this reason I will use tasks[tasks.length-1] and tasks[tasks.length-2]
 test('POST /tasks return 201', async () => {
     const response = await request(url).post('/tasks').send({
         name: "FirstTask",
@@ -55,22 +58,22 @@ test('GET /tasks should return list of tasks', async () => {
     const tasks = response.body.result;
 
     expect(tasks).toBeDefined();
-    expect(tasks[0]).toBeDefined();
-    expect(tasks[1]).toBeDefined();
-    temp_id = tasks[0]._id;
+    expect(tasks[tasks.length-1]).toBeDefined();
+    expect(tasks[tasks.length-2]).toBeDefined();
+    temp_id = tasks[tasks.length-2]._id;
 
 
-    expect(tasks[0].name).toBe("FirstTask");
-    expect(tasks[0].exercises[0]).toBe(1);
-    expect(tasks[0].exercises[1]).toBe(2);
-    expect(tasks[0].exercises[2]).toBe(5);
+    expect(tasks[tasks.length-2].name).toBe("FirstTask");
+    expect(tasks[tasks.length-2].exercises[0]).toBe(1);
+    expect(tasks[tasks.length-2].exercises[1]).toBe(2);
+    expect(tasks[tasks.length-2].exercises[2]).toBe(5);
 
-    expect(tasks[1].name).toBe("SecondTask");
-    expect(tasks[1].exercises[0]).toBe(2);
-    expect(tasks[1].exercises[1]).toBe(4);
-    expect(tasks[1].exercises[2]).toBe(5);
-    expect(tasks[1].exercises[3]).toBe(6);
-    expect(tasks[1].exercises[4]).toBe(7);
+    expect(tasks[tasks.length-1].name).toBe("SecondTask");
+    expect(tasks[tasks.length-1].exercises[0]).toBe(2);
+    expect(tasks[tasks.length-1].exercises[1]).toBe(4);
+    expect(tasks[tasks.length-1].exercises[2]).toBe(5);
+    expect(tasks[tasks.length-1].exercises[3]).toBe(6);
+    expect(tasks[tasks.length-1].exercises[4]).toBe(7);
 
 });
 
@@ -81,12 +84,12 @@ test('GET /tasks filtered should return list of tasks', async () => {
     const tasks = response.body.result;
 
     expect(tasks).toBeDefined();
-    expect(tasks[0]).toBeDefined();
+    expect(tasks[tasks.length-1]).toBeDefined();
 
-    expect(tasks[0].name).toBe("FirstTask");
-    expect(tasks[0].exercises[0]).toBe(1);
-    expect(tasks[0].exercises[1]).toBe(2);
-    expect(tasks[0].exercises[2]).toBe(5);
+    expect(tasks[tasks.length-1].name).toBe("FirstTask");
+    expect(tasks[tasks.length-1].exercises[0]).toBe(1);
+    expect(tasks[tasks.length-1].exercises[1]).toBe(2);
+    expect(tasks[tasks.length-1].exercises[2]).toBe(5);
 });
 
 
