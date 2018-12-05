@@ -11,6 +11,7 @@ function validExercise(exercise) {
   if (!exercise)
     return undefined;
 
+  let id = exercise.id;
   let name = exercise.name;
   let type = exercise.type;
   let question = exercise.question;
@@ -38,7 +39,23 @@ function validExercise(exercise) {
     };
   else
     return undefined;
+
+  if(id)
+    valid.id = id;
+
   return valid;
+}
+
+function cleanExercise(ex) {
+  if (!validExercise(ex))
+    return undefined;
+
+  let tmp = {};
+  for (let key in ex) {
+    if (key != 'deleted')
+      tmp[key] = ex[key];
+  }
+  return tmp;
 }
 
 function createExercise(exercise) {
@@ -55,23 +72,36 @@ function createExercise(exercise) {
   newExercise.deleted = false;
   exercises.push(newExercise);
 
-  return newExercise;
+  return cleanExercise(newExercise);
 }
 
 function readExerciseById(id) {
-  return exercises.find(x => (x.id == id && !x.deleted));
+  let found =  exercises.find(x => (x.id == id && !x.deleted));
+  if(!found)
+    return undefined;
+  else
+    return found;
 }
 
-function updateExercise(exercise) {
+function updateExercise(id, newExercise) {
   let i = exercises.findIndex(x => (x.id == id && !x.deleted));
-  let updated = validExercise(exercise);
-
-  if (!exercises[i] || !updated)
+  if ( i < 0 )
     return undefined;
 
-  updated.deleted = false;
-  exercises[i] = updated;
-  return exercises[i]
+  for (let key in exercises[i]){
+    if (!newExercise[key]) {
+      newExercise[key] = exercises[i][key];
+    }
+  }
+
+  newExercise = validExercise(newExercise);
+
+  if (!newExercise)
+    return undefined;
+
+  exercises[i] = newExercise;
+
+  return cleanExercise(exercises[i]);
 }
 
 function deleteExercise(id) {
@@ -80,14 +110,16 @@ function deleteExercise(id) {
     return undefined;
   toDelete.deleted = true;
   updateExercise(toDelete);
+  return true;
 }
 
 function readExecises() {
-  return exercises.filter(x => !x.deleted).map(x => x.id);
+  return exercises.filter(x => !x.deleted).map(x => cleanExercise(x));
 }
 
 module.exports = {
   createExercise,
+  cleanExercise,
   readExecises,
   readExerciseById,
   validExercise,

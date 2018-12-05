@@ -9,6 +9,8 @@ const peerReviews = require('./api/routes/peerReviews');
 const users = require('./api/routes/users');
 const tasks = require('./api/routes/tasks');
 const assignments = require('./api/routes/assignments');
+const exercises = require('./api/routes/exercises');
+
 
 const config = require('./config');
 
@@ -37,13 +39,12 @@ app.use((req, res, next) => {
 });
 
 // Set routes which should handle requests, these method forwards directly to js file with corrispondent method
-// app.use("/exercises", exercises);
-// app.use('/users', users);
 app.use('/submissions', submissions);
 app.use('/peerReviews', peerReviews);
 app.use('/users', users);
 app.use('/tasks', tasks);
 app.use('/assignments', assignments);
+app.use('/exercises', exercises);
 
 // if the server reach that line, none of the routes above was able to process the request, so i should send an error message
 app.use((req, res, next) => {

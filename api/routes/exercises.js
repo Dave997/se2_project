@@ -22,7 +22,35 @@ router.post("/", (req, res) => {
   if (created)
     res.json(created);
   else
-    res.status(403).send("Bad request");
+    res.status(400).send("Bad request");
+});
+
+router.put("/:id", (req, res) => {
+  let id = req.params.id;
+  let toUpdate = req.body;
+  if(!id || !toUpdate) {
+    res.status(400);
+    res.send("Bad requuest");
+  }
+  let updated = exercise.updateExercise(id, toUpdate);
+  if(!updated){
+    res.sendStatus(404);
+  } else{
+    res.json(updated);
+  }
+});
+
+router.delete("/:id", (req, res) => {
+  let id = req.params.id;
+  if (!id){
+    res.sendStatus(400);
+  }
+
+  let deleted = exercise.deleteExercise(id);
+  if(!deleted)
+    res.status(404).send("Not found");
+  else
+    res.sendStatus(200);
 });
 
 module.exports = router;
