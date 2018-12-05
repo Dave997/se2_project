@@ -4,22 +4,12 @@ const morgan = require('morgan'); //middleware for authentication
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-// const exercises = require('./api/routes/exercises');
-const users = require('./api/routes/users');
 const submissions = require('./api/routes/submissions');
+//const peerReviews = require('./api/routes/peerReviews');
+const users = require('./api/routes/users');
+const config = require('./config');
 
-// DB connection
-// local db installation tutorial: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
-
-// mongoose.connect('mongodb://nathaniellee:'
-//     + process.env.MONGO_ATLAS_PSW  +'@se2nathaniellee-shard-00-00-kcdnu.gcp.mongodb.net:27017,se2nathaniellee-shard-00-01-kcdnu.gcp.mongodb.net:27017,se2nathaniellee-shard-00-02-kcdnu.gcp.mongodb.net:27017/test?ssl=true&replicaSet=SE2Nathaniellee-shard-0&authSource=admin&retryWrites=true',
-//     {
-//         useMongoClient: true
-//     });
-// mongoose.Promise = global.Promise;
-
-// N.B. remember to make the db run! $> sudo service mongod start
-mongoose.connect('mongodb://127.0.0.1:27017');
+mongoose.connect(config.DB_PATH);
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false})); //this would parse urlencoded requets, without rich-extended options (false)
@@ -29,14 +19,14 @@ app.use(bodyParser.json()); // this will extract json data from requests
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header(
-        'Access-Control-Allow-Headers', 
+        'Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept, Authorization'
     );
 
     //sent by browser in post req, to check if it's possibile to perform it
     if(req.method === 'OPTIONS'){
         res.header('Acces-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-        
+
         return res.status(200).json({});
     }
 
@@ -45,8 +35,10 @@ app.use((req, res, next) => {
 
 // Set routes which should handle requests, these method forwards directly to js file with corrispondent method
 // app.use("/exercises", exercises);
-app.use('/users', users);
+// app.use('/users', users);
 app.use('/submissions', submissions);
+//app.use('/peerReviews', peerReviews);
+app.use('/users', users);
 
 // if the server reach that line, none of the routes above was able to process the request, so i should send an error message
 app.use((req, res, next) => {

@@ -1,5 +1,7 @@
 const request = require('supertest');
-const url = 'http://localhost:3000/submissions';
+const config = require('../../config');
+
+const url = config.SERVER_PATH+"submissions";
 
 let submission = {};
 
