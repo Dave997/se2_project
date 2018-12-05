@@ -4,7 +4,6 @@ const assignments = require("../controllers/assignments");
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  console.log("AOOOOOOOOOOOOOOOOOOOOOO!!")
   let promise = assignments.assignment_get_all();
   promise.then(query => {
     let response = query.map(a => assignments.assignment_clean(a));
