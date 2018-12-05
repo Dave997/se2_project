@@ -6,7 +6,12 @@ const mongoose = require('mongoose');
 
 const peerReviews = require('./api/routes/peerReviews');
 const users = require('./api/routes/users');
+<<<<<<< HEAD
 const tasks = require('./api/routes/tasks');
+=======
+const assignments = require('./api/routes/assignments');
+
+>>>>>>> assignments
 const config = require('./config');
 
 mongoose.connect(config.DB_PATH);
@@ -38,7 +43,11 @@ app.use((req, res, next) => {
 // app.use('/users', users);
 app.use('/peerReviews', peerReviews);
 app.use('/users', users);
+<<<<<<< HEAD
 app.use('/tasks', tasks);
+=======
+app.use('/assignments', assignments);
+>>>>>>> assignments
 
 // if the server reach that line, none of the routes above was able to process the request, so i should send an error message
 app.use((req, res, next) => {
