@@ -1,4 +1,4 @@
-const express = require('express'); // this will use express to handle request
+const express = require('express');
 const app = express();
 const morgan = require('morgan'); //middleware for authentication
 const bodyParser = require('body-parser');
@@ -24,7 +24,6 @@ mongoose.connect('mongodb://127.0.0.1:27017');
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false})); //this would parse urlencoded requets, without rich-extended options (false)
 app.use(bodyParser.json()); // this will extract json data from requests
-
 
 // headers to prevent CORS errors
 app.use((req, res, next) => {
@@ -53,9 +52,8 @@ app.use('/submissions', submissions);
 app.use((req, res, next) => {
     const error = new Error('Not found');
     error.status = 404;
-
     //this will forward the error req insted of the original
-    next(error); 
+    next(error);
 })
 
 //* Error Handler
