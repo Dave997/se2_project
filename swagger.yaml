@@ -302,7 +302,7 @@ paths:
       tags:
       - Tasks
       summary: Add a new Task to the pool of all tasks
-      operationId: addExercise
+      operationId: addTask
       consumes:
       - application/json
       produces:
