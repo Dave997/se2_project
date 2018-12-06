@@ -195,3 +195,61 @@ test(
     expect(exercise.readExerciseById(created.id)).toEqual(created);
   }
 )
+
+
+test(
+  "createExercise and update type - Not Valid Exercise", () => {
+    let ex = {
+      name: "Es 1",
+      type: exercise.ExerciseType.CheckBox,
+      question: "Which is your favourite colour?",
+      options: ["red", "green", "blue"]
+    };
+    let created = exercise.createExercise(ex);
+
+    let updated = exercise.updateExercise(created.id, {
+      type: exercise.ExerciseType.TextBox //it has no options      
+    });
+
+    expect(updated).toBeUndefined();
+  }
+)
+
+test(
+  "createExercise and delete - Valid Exercise", () => {
+    let ex = {
+      name: "Es 1",
+      type: exercise.ExerciseType.CheckBox,
+      question: "Which is your favourite colour?",
+      options: ["red", "green", "blue"]
+    };
+    let created = exercise.createExercise(ex);
+    let id = created.id;
+
+    let deleted = exercise.deleteExercise(id)
+    expect(deleted).toEqual(true);
+    expect(exercise.readExerciseById(id)).toBeUndefined();
+  }
+)
+
+test(
+  "createExercise and delete delete - Valid Exercise", () => {
+    let ex = {
+      name: "Es 1",
+      type: exercise.ExerciseType.CheckBox,
+      question: "Which is your favourite colour?",
+      options: ["red", "green", "blue"]
+    };
+    let created = exercise.createExercise(ex);
+    let id = created.id;
+    let deleted = exercise.deleteExercise(id)
+    
+    expect(deleted).toEqual(true);
+    expect(exercise.readExerciseById(id)).toBeUndefined();
+
+    deleted = exercise.deleteExercise(id)
+    expect(deleted).toBeUndefined();
+
+
+  }
+)
