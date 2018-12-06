@@ -17,7 +17,7 @@ exports.submissions_get_all = (req, res) => {
                     _id: submission._id,
                     taskId: submission.taskId,
                     userId: submission.userId,
-                    answer: submission.answer
+                    answers: submission.answers
                 });
             });
 
@@ -52,7 +52,7 @@ exports.submissions_get_submissionInfo = (req, res) => {
                     _id: submission[0]._id,
                     taskId: submission[0].taskId,
                     userId: submission[0].userId,
-                    answer: submission[0].answer
+                    answers: submission[0].answers
                 }
             });
         }
@@ -66,7 +66,7 @@ exports.submissions_get_submissionInfo = (req, res) => {
 exports.submissions_post_createSubmission = (req, res) => {
     if (!req.body.taskId ||
         !req.body.userId ||
-        !req.body.answer ||
+        !req.body.answers ||
         req.body.taskId.length == 0 ||
         req.body.userId.length == 0) {
         return res.status(400).json({
@@ -74,11 +74,20 @@ exports.submissions_post_createSubmission = (req, res) => {
         });
     }
 
+    // Check if all exerciseId are defined
+    for (var answer in req.body.answers) {
+        if (!req.body.answers[answer].exerciseId || isNaN(req.body.answers[answer].exerciseId)) {
+            return res.status(400).json({
+                message: 'Bad request'
+            });
+        }
+    }
+
     const submission = new Submission({
         _id: new mongoose.Types.ObjectId(),
         taskId: req.body.taskId,
         userId: req.body.userId,
-        answer: req.body.answer
+        answers: req.body.answers
     });
 
     submission.save((err) => {
@@ -92,7 +101,7 @@ exports.submissions_post_createSubmission = (req, res) => {
                 _id: submission._id,
                 taskId: submission.taskId,
                 userId: submission.userId,
-                answer: submission.answer
+                answers: submission.answers
             }
         });
     });
@@ -139,15 +148,12 @@ exports.submissions_post_deleteSubmission = (req, res) => {
         });
 };
 
-// TODO: trovare il modo di tornare l'oggetto aggiornato completo, non soltanto i campi aggiornati 
 exports.submissions_put_updateSubmission = (req, res) => {
     if (!req.params.submissionId) {
         res.status(400).json({
             messsage: "Bad request"
         });
     }
-
-    console.log('\n\n' + req.params.submissionId + '\n\n');
 
     Submission.find({
         _id: req.params.submissionId
@@ -164,14 +170,23 @@ exports.submissions_put_updateSubmission = (req, res) => {
     });
 
     let submission_updated = {};
-    if (req.body.taskId) {
+    if (req.body.taskId && !req.body.taskId.length == 0) {
         submission_updated.taskId = req.body.taskId;
     }
-    if (req.body.userId) {
+    if (req.body.userId && !req.body.userId.length == 0) {
         submission_updated.userId = req.body.userId;
     }
-    if (req.body.answer) {
-        submission_updated.answer = req.body.answer;
+
+    if (req.body.answers) {
+        // Check if all exerciseId are defined and Numbers
+        for (var answer in req.body.answers) {
+            if (!req.body.answers[answer].exerciseId || isNaN(req.body.answers[answer].exerciseId)) {
+                return res.status(400).json({
+                    message: 'Bad request'
+                });
+            }
+        }
+        submission_updated.answers = req.body.answers;
     }
 
     Submission.update({
@@ -190,5 +205,3 @@ exports.submissions_put_updateSubmission = (req, res) => {
             });
         });
 };
-
-//TODO: controllare consistenza con swagger.yaml (es: quando aggiorno devo ritornare l'oggetto aggiornato??)
