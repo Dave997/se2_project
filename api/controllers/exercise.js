@@ -21,6 +21,9 @@ function validExercise(exercise) {
   if (!name || !type || !question)
     return undefined;
 
+  if(type == ExerciseType.TextBox && options)
+    return undefined;
+    
   if (type != ExerciseType.TextBox && type != ExerciseType.CheckBox && type != ExerciseType.RadioButton && type != ExerciseType.TrueOrFalse) // exercise type not expected
     return undefined;
 

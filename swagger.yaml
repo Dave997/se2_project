@@ -161,10 +161,25 @@ paths:
         - application/json
       responses:
         200:
-          description: OK
+          description: List of exercises
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Exercise'
           examples:
             'application/json':
-                exercises: [180, 164, 245, 354]
+                [{
+                  "name": "Es 1",
+                  "type": "Text box",
+                  "question": "Which is your favourite colour?",
+                  "id": 1544122765447
+                }, {
+                  "name": "Modified Exercise",
+                  "type": "Check Box",
+                  "question": "Which is your favourite colour?",
+                  "options": ["red", "green", "blue"],
+                  "id": 1544122765455
+                }]
         400:
           description: Bad request
         404:
