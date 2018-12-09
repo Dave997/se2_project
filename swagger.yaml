@@ -1,120 +1,1222 @@
 swagger: '2.0'
+
 info:
   version: '1.0'
-  title: "se2_project_nathaniellee"
-  description: Polls is a simple API allowing consumers to view polls and vote in them.
-  license:
-    name: MIT
-    url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
-host: polls.apiblueprint.org
-basePath: /
+  title: 'DEEO: Dynamic Exam Evaluation Online'
+  description: Didactical project for Software Engineering 2 UniTN - Nathaniellee group
+
+host: se2-project-nathaniellee.herokuapp.com
+
+basePath: /api/v0.1
 schemes:
-- http
+- https
+
 consumes:
 - application/json
 produces:
 - application/json
+
 paths:
-  /questions:
-    x-summary: Questions Collection
+  /users:
     get:
-      summary: List All Questions
+      summary: Return the list of all users
+      produces:
+        - application/json
       responses:
         200:
-          description: Successful Response
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Question'
+          description: A json object with a number of users and an array with all users
           examples:
-            application/json:
-              - question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 2048
-                  - choice: Python
-                    votes: 1024
-                  - choice: Objective-C
-                    votes: 512
-                  - choice: Ruby
-                    votes: 256
+            'application/json':
+                count: 1 
+                users: [{
+                  "id": "5bfec803124054189263178d",
+                  "email": "example@example.it",
+                  "name": "example"
+                }]
+        500:
+          description: Internal server error
+
     post:
-      description: >-
-        You may create your own question using this action. It takes a JSON
-        object containing a question and a collection of answers in the
-        form of choices.
-      summary: Create a New Question
+      tags:
+      - Users
+      summary: Add a new User to the system
+      operationId: addUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
       parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/QuestionRequest'
+      - in: body
+        name: User
+        description: The User to create
+        required: true
+        schema:
+          $ref: '#/definitions/User'
       responses:
         201:
-          description: ''
-          schema:
-            $ref: '#/definitions/Question'
+          description: Created
           examples:
-            application/json:
-                question: Favourite programming language?
-                published_at: '2015-08-05T08:40:51.620Z'
-                choices:
-                  - choice: Swift
-                    votes: 0
-                  - choice: Python
-                    votes: 0
-                  - choice: Objective-C
-                    votes: 0
-                  - choice: Ruby
-                    votes: 0
-definitions:
-  Question:
-    title: Question
-    type: object
-    properties:
-      question:
-        type: string
-      published_at:
-        type: string
-      choices:
-        type: array
-        items:
-          $ref: '#/definitions/Choice'
-    required:
-      - question
-      - published_at
-      - choices
-  Choice:
-    title: Choice
-    type: object
-    properties:
-      votes:
+            'application/json':
+                message: 'User created' 
+                user: {
+                  "deleted": 0,
+                  "_id": "5bffa00b0d3ba7179482fdc9",
+                  "email": "example@example.it",
+                  "password": "$2b$10$ui9zXd4NK2UAhUVeymaYpeCdpaUMFrAg6WyHrH3PV1jrNaWkv7yHe",
+                  "name": "example",
+                  "__v": 0
+                }
+        401:
+          description: Bad parameters
+        409:
+          description: User already exists
+        500:
+          description: Internal server error
+
+  /users/{userId}:
+    get:
+      summary: Return the User with the specified ID
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+          description: The ID of the User
+      responses:
+        200:
+          description: A User object
+          schema:
+            $ref: '#/definitions/User'
+        400:
+          description: The specified User ID is invalid
+        401:
+          description: User not found 
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing User
+      operationId: updateUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: userId
+        required: true
         type: integer
-        format: int32
-      choice:
+        description: The ID of the User
+      - in: body
+        name: user field(s)
+        description: The fields of user to update
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+            name:
+              type: string
+      
+      responses:
+        200:
+          description: Updated
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Bad Parameters 
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a User
+      operationId: deleteUser
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
         type: string
-    required:
-      - votes
-      - choice
-  QuestionRequest:
-    title: Question Request
+      - name: userId
+        in: path
+        description: User ID to delete
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+              message": "User 5bffa00b0d3ba7179482fdc9 deleted!"
+        401:
+          description: A User with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /exercises:
+    get:
+      summary: Return the list of all exercises
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+                exercises: [180, 164, 245, 354]
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - Exercises
+      summary: Add a new Exercise to the system
+      operationId: addExercise
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Exercise
+        description: The Exercise to create
+        required: true
+        schema:
+          $ref: '#/definitions/Exercise'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /exercises/{exerciseId}:
+    get:
+      summary: Return the Exercise with the specified ID
+      parameters:
+        - in: path
+          name: exerciseId
+          required: true
+          type: integer
+          description: The ID of the Exercise
+      responses:
+        200:
+          description: A Exercise object
+          schema:
+            $ref: '#/definitions/Exercise'
+        400:
+          description: The specified Exercise ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A Exercise with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Exercise
+      operationId: updateExercise
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: exerciseId
+        required: true
+        type: integer
+        description: The ID of the Exercise
+      - in: body
+        name: Exercise
+        description: The Excercise to update
+        required: true
+        schema:
+          $ref: '#/definitions/Exercise'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Exercise with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a Exercise
+      operationId: deleteExercise
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: exerciseId
+        in: path
+        description: Exercise ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Exercise with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /tasks:
+    get:
+      summary: Return the list of all tasks
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+                exercises: [180, 164, 245, 354]
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - Tasks
+      summary: Add a new Task to the pool of all tasks
+      operationId: addTask
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Task
+        description: The Task to create
+        required: true
+        schema:
+          $ref: '#/definitions/Task'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /tasks/{taskId}:
+    get:
+      summary: Return the Task with the specified ID
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          type: integer
+          description: The ID of the Task
+      responses:
+        200:
+          description: A Task object
+          schema:
+            $ref: '#/definitions/Task'
+        400:
+          description: The specified Task ID is invalid
+        404:
+          description: A Task with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Task
+      operationId: updateTask
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: taskId
+        required: true
+        type: integer
+        description: The ID of the Task
+      - in: body
+        name: Task
+        description: The Task to update
+        required: true
+        schema:
+          $ref: '#/definitions/Task'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Task with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a Task
+      operationId: deleteTask
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: taskId
+        in: path
+        description: Task ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Task with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /userGroups:
+    get:
+      summary: Return the list of all user groups
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+                exercises: [180, 164, 245, 354]
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - UserGroup
+      summary: Add a new User Group to the groups
+      operationId: addUserGroup
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: UserGroup
+        description: The UserGroup to create
+        required: true
+        schema:
+          $ref: '#/definitions/UserGroup'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /userGroups/{userGroupId}:
+    get:
+      summary: Return the Group of users with the specified ID
+      parameters:
+        - in: path
+          name: userGroupId
+          required: true
+          type: integer
+          description: The ID of the Group of users
+      responses:
+        200:
+          description: A Group object
+          schema:
+            $ref: '#/definitions/UserGroup'
+        400:
+          description: The specified userGroup ID is invalid
+        404:
+          description: A group of users with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing User Group
+      operationId: updateUserGroup
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: userGroupId
+        required: true
+        type: integer
+        description: The ID of the User Group
+      - in: body
+        name: UserGroup
+        description: The User Group to update
+        required: true
+        schema:
+          $ref: '#/definitions/UserGroup'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A User Group with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete an User Group
+      operationId: deleteUserGroup
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: userGroupId
+        in: path
+        description: User Group ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: An User Group with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /assignments:
+    get:
+      summary: Return the list of all assignments
+      responses:
+        200:
+          description: An Assignment object
+          schema:
+            $ref: '#/definitions/Assignment'
+        400:
+          description: The specified Assignment ID is invalid
+        404:
+          description: An Assignment with the specified ID was not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - Assignments
+      summary: Add a new Assignment to the pool of all tasks
+      operationId: addAssignment
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Assignment
+        description: The Assignment to create
+        required: true
+        schema:
+          $ref: '#/definitions/Assignment'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /assignments/{assignmentId}:
+    get:
+      summary: Return the Assignment with the specified ID
+      parameters:
+        - in: path
+          name: assignmentId
+          required: true
+          type: integer
+          description: The ID of the Assignment
+      responses:
+        200:
+          description: An Assignment object
+          schema:
+            $ref: '#/definitions/Assignment'
+        400:
+          description: The specified Assignment ID is invalid
+        404:
+          description: An Assignment with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Assignment
+      operationId: updateAssignment
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: assignmentId
+        required: true
+        type: integer
+        description: The ID of the Assignment
+      - in: body
+        name: Assignment
+        description: The Assignment to update
+        required: true
+        schema:
+          $ref: '#/definitions/Assignment'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: An Assignment with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete an Assignment
+      operationId: deleteAssignment
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: assignmentId
+        in: path
+        description: Assignment ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: An Assignment with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /peerReviews:
+    get:
+      summary: Return the list of all peer reviews
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+                peerReviews: [180, 164, 245, 354]
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - PeerReviews
+      summary: Add a new Peer Review to the system
+      operationId: addPeerReview
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Peer Review
+        description: The Peer Review to create
+        required: true
+        schema:
+          $ref: '#/definitions/PeerReview'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /peerReviews/{peerReviewId}:
+    get:
+      summary: Return the Peer Review with the specified ID
+      parameters:
+        - in: path
+          name: peerReviewId
+          required: true
+          type: integer
+          description: The ID of the Peer Review
+      responses:
+        200:
+          description: A Peer Review object
+          schema:
+            $ref: '#/definitions/PeerReview'
+        400:
+          description: The specified Peer Review ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A Peer Review with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Peer Review
+      operationId: updatePeerReview
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: peerReviewId
+        required: true
+        type: integer
+        description: The ID of the Peer Review
+      - in: body
+        name: PeerReview
+        description: The Excercise to update
+        required: true
+        schema:
+          $ref: '#/definitions/PeerReview'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Peer Review with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a Peer Review
+      operationId: deletePeerReview
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: peerReviewId
+        in: path
+        description: Peer Review ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Peer Review with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /submissions:
+    get:
+      summary: Return the list of all submissions
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+              submissions: [180, 164, 245, 354]
+        400:  
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Submissions
+      summary: Add a new submission
+      operationId: addSubmission
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Submission
+        description: The Peer Review to create
+        required: true
+        schema:
+          $ref: '#/definitions/Submission'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /submissions/{submissionId}:
+    get:
+      summary: Return the Submission with the specified ID
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        type: integer
+        description: The ID of the Submission
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A Submission object
+          schema:
+            $ref: '#/definitions/Submission'
+        400:
+          description: The specified Submission ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A Submission ID was not found in the system
+        500:
+          description: Internal server error
+    put:
+      summary: Update an existing Submission
+      operationId: updateSubmission
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: submissionId
+        required: true
+        type: integer
+        description: The ID of Submission
+      - in: body
+        name: Submission
+        description: The Submission to update
+        required: true
+        schema:
+          $ref: '#/definitions/Submission'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Submission with the specified ID was not found
+        500:
+          description: Internal server error
+    delete:
+      summary: Delete a Submission
+      operationId: deleteSubmission
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: submissionId
+        in: path
+        description: Submission ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Submission with the specified ID was not found
+        500:
+          description: Internal server error
+
+  /taskEvaluations:
+    get:
+      summary: Return the list of all task evaluations
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          examples:
+            'application/json':
+                taskEvaluations: [180, 164, 245, 354]
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+    post:
+      tags:
+      - TaskEvaluations
+      summary: Add a new Task Evaluation to the system
+      operationId: addTaskEvaluation
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Task Evaluation
+        description: The Task Evaluation to create
+        required: true
+        schema:
+          $ref: '#/definitions/TaskEvaluation'
+      responses:
+        201:
+          description: Created
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+        500:
+          description: Internal server error
+
+  /taskEvaluations/{taskEvaluationId}:
+    get:
+      summary: Return the Task Evaluation with the specified ID
+      parameters:
+        - in: path
+          name: taskEvaluationId
+          required: true
+          type: integer
+          description: The ID of the Task Evaluation
+      responses:
+        200:
+          description: A Task Evaluation object
+          schema:
+            $ref: '#/definitions/TaskEvaluation'
+        400:
+          description: The specified Task Evaluation ID is invalid
+        401:
+          description: Unauthorized
+        404:
+          description: A Task Evaluation with the specified ID was not found
+        500:
+          description: Internal server error
+
+    put:
+      summary: Update an existing Task Evaluation
+      operationId: updateTaskEvaluation
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: taskEvaluationId
+        required: true
+        type: integer
+        description: The ID of the Task Evaluation
+      - in: body
+        name: TaskEvaluation
+        description: The Excercise to update
+        required: true
+        schema:
+          $ref: '#/definitions/TaskEvaluation'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Task Evaluation with the specified ID was not found
+        500:
+          description: Internal server error
+
+    delete:
+      summary: Delete a Task Evaluation
+      operationId: deleteTaskEvaluation
+      produces:
+      - application/json
+      parameters:
+      - name: api_key
+        in: header
+        required: false
+        type: string
+      - name: taskEvaluationId
+        in: path
+        description: Task Evaluation ID to delete
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: OK
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Unauthorized
+        404:
+          description: A Task Evaluation with the specified ID was not found
+        500:
+          description: Internal server error
+
+definitions:
+  User:
     type: object
     properties:
+      id:
+        type: string
+        example: 5bfec803124054189263178d
+      name:
+        type: string
+        example: Polpetta
+      email:
+        type: string
+        example: polpetta@mail.it
+      password:
+        type: string
+        example: $2b$10$UvjvmLckx3wEoeHrpiqJme7i7p0k84TwLCMSQ.QuSjkkqvHTuvOAe
+    required:
+      - id
+      - name
+      - email
+      - password
+
+  Exercise:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 123
+        format: int64
+      name:
+        type: string
+        example: Polpetta
+      type:
+        type: string
+        example: Text box
+        enum: [Radio button, Text box, Check box, True or False]
       question:
         type: string
-      choices:
+        example: "Which is your favourite ... ?"
+      options:
         type: array
         items:
           type: string
+        example: [red, green, blue]
     required:
+      - id
+      - name
+      - type
       - question
-      - choices
-    example:
-      question: Favourite programming language?
-      choices:
-        - Swift
-        - Python
-        - Objective-C
-        - Ruby
+
+  Submission:
+    type: object
+    properties:
+      submissionId:
+        type: integer
+        example: 123
+        format: int64
+      taskId:
+        type: integer
+        example: 123
+        format: int64
+      userId:
+        type: integer
+        example: 456
+        format: int64
+      answers:
+        type: array
+        items:
+          type: object
+          properties:
+            exerciseId:
+              type: integer
+              example: 789
+            value:
+              type: string
+              example: Polpetta
+    required:
+      - taskId
+      - userId
+      - answers
+
+  PeerReview:
+    type: object
+    properties:
+      peerReviewId:
+        type: integer
+        example: 1234
+        format: int64  
+      submissionId:
+        type: integer
+        example: 123
+        format: int64
+      userId:
+        type: integer
+        example: 456
+        format: int64
+      answers:
+        type: array
+        items:
+          type: object
+          properties:
+            exerciseId:
+              type: integer
+              example: 789
+            value:
+              type: string
+              example: Polpetta
+    required:
+      - submissionId
+      - userId
+      - answers
+
+  Task:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 123
+      name:
+        type: string
+        example: Polpetta
+      exercises:
+        type: array
+        items:
+          type: integer
+          example: 456
+    required:
+      - id
+      - exercises
+
+  UserGroup:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 123
+      name:
+        type: string
+        example: Polpetta
+      users:
+        type: array
+        items:
+          type: integer
+          example: 456
+    required:
+      - id
+      - name
+      - users
+
+  Assignment:
+    type: object
+    properties:
+      assignmentId:
+        type: integer
+        example: 123
+        format: int64
+      taskId:
+        type: integer
+        example: 123
+      userGroupId:
+        type: integer
+        example: 123
+      name:
+        type: string
+        example: Polpetta
+      deadline:
+        type: string
+        format: date-time
+        example: 13/11/2018-10:40
+    required:
+      - taskId
+      - userGroupId
+      - deadline
+
+  TaskEvaluation:
+    type: object
+    properties:
+      mark:
+        type: integer
+        example: 30
+      userId:
+        description: The user that evaluates the submission
+        type: integer
+        example: 123
+      submissionId:
+        type: integer
+        example: 456
+      review:
+        type: string
+        example: Good job Polpetta!
+    required:
+      - mark
+      - userId
+      - submissionId
