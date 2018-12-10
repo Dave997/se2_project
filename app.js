@@ -1,9 +1,10 @@
 const express = require('express');
-const app = express();
 const morgan = require('morgan'); //middleware for authentication
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 
+const config = require('./config');
+
+//////////  Routes  //////////
 const submissions = require('./api/routes/submissions');
 const peerReviews = require('./api/routes/peerReviews');
 const users = require('./api/routes/users');
@@ -11,10 +12,7 @@ const tasks = require('./api/routes/tasks');
 const assignments = require('./api/routes/assignments');
 const exercises = require('./api/routes/exercises');
 
-
-const config = require('./config');
-
-mongoose.connect(config.DB_PATH);
+const app = express();
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false})); //this would parse urlencoded requets, without rich-extended options (false)
