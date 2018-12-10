@@ -1,7 +1,7 @@
 const myHttp = require("../../util/httpRequest");
 const config = require("../../config");
 
-const url = config.SERVER_PATH+"assignments";
+const url = config.SERVER_PATH+"/assignments";
 
 const validPostAssignments = [{
     name: "Assignment 1",

@@ -1,8 +1,8 @@
 const request = require('supertest');
-//const url = require('../../app.js');
-const url = 'http://localhost:3000';
 const mongoose = require("mongoose");
 
+const config = require('../../config');
+const url = config.SERVER_PATH;
 
 let temp_id1;
 let temp_id2;

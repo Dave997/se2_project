@@ -1,7 +1,7 @@
 const request = require('supertest');
 const config = require('../../config');
 
-const url = config.SERVER_PATH + "submissions";
+const url = config.SERVER_PATH+"/submissions";
 
 let submission = {};
 
